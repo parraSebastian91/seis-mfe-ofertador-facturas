@@ -1,0 +1,39 @@
+.dashboard-wrapper {
+  padding: 1.5rem;
+}
+
+h1 {
+  margin: 0 0 0.5rem;
+  color: var(--secondary);
+}
+
+p {
+  margin: 0;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.kpi-card {
+  background: #ffffff;
+  border: 1px solid #dbe1ea;
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.value {
+  margin-top: 0.75rem;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.trend {
+  display: inline-block;
+  margin-top: 0.35rem;
+  color: #0b8f5e;
+  font-weight: 600;
+}

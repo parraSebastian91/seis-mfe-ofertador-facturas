@@ -1,0 +1,14 @@
+<section class="dashboard-wrapper">
+  <header>
+    <h1>Dashboard de Facturas</h1>
+    <p>Vista inicial para KPIs y seguimiento de estado de facturacion.</p>
+  </header>
+
+  <div class="cards-grid">
+    <article class="kpi-card" *ngFor="let card of cards">
+      <h2>{{ card.title }}</h2>
+      <p class="value">{{ card.value }}</p>
+      <span class="trend">{{ card.trend }}</span>
+    </article>
+  </div>
+</section>
