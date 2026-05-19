@@ -1,0 +1,36 @@
+<div class="perfil-riesgo">
+  <div class="historial-pago">
+    <h4>Historial de Pago</h4>
+    <ng-container *ngIf="historial; else sinHistorial">
+      <div class="barras">
+        <div *ngFor="let b of historial.barras" class="barra" [style.height]="b + 'px'"></div>
+      </div>
+      <div class="metricas">
+        Promedio: {{ historial.promedio }} días | Desviación: ±{{ historial.desviacion }} días
+      </div>
+    </ng-container>
+    <ng-template #sinHistorial>
+      <div class="gris">Sin historial disponible para este deudor.</div>
+    </ng-template>
+  </div>
+  <div class="cupo-exposicion">
+    <h4>Exposición de Cupo</h4>
+    <ng-container *ngIf="cupoAsignado && cupo; else sinCupo">
+      <div class="barra-cupo {{ colorBarra }}">
+        <div class="progreso" [style.width]="porcentajeUso + '%'" [style.background]="colorBarra"></div>
+      </div>
+      <div class="cupo-metricas">
+        Cupo total asignado: ${{ cupo.total | number:'1.0-0' }}<br>
+        Cupo ya utilizado: ${{ cupo.utilizado | number:'1.0-0' }}<br>
+        Cupo disponible: ${{ cupo.disponible | number:'1.0-0' }}
+      </div>
+      <div *ngIf="porcentajeUso === 100" class="cupo-agotado">
+        Cupo agotado para este deudor.<br>
+        <span class="rojo">No puedes ofertar sobre esta factura. El cupo de riesgo para este deudor está al 100%.</span>
+      </div>
+    </ng-container>
+    <ng-template #sinCupo>
+      <div class="gris">Sin cupo definido para este deudor.</div>
+    </ng-template>
+  </div>
+</div>

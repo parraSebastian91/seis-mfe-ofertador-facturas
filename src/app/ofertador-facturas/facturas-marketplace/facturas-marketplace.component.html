@@ -1,0 +1,32 @@
+<div class="filtros-bar">
+  <button (click)="aplicarFiltro(filtroActivo === 'preferidas' ? 'ninguno' : 'preferidas')"
+    [class.activo]="filtroActivo === 'preferidas'">Mis Preferidas</button>
+  <button (click)="aplicarFiltro(filtroActivo === 'liquidez' ? 'ninguno' : 'liquidez')"
+    [class.activo]="filtroActivo === 'liquidez'">Alta Liquidez</button>
+  <button (click)="aplicarFiltro(filtroActivo === 'reloj' ? 'ninguno' : 'reloj')"
+    [class.activo]="filtroActivo === 'reloj'">Reloj de Arena</button>
+</div>
+
+<div class="facturas-lista">
+  <div *ngFor="let factura of facturasFiltradas" class="factura-tarjeta" [class.nueva]="factura.nueva" (click)="onSeleccionar(factura)">
+    <div class="cabecera">
+      <span class="folio">#{{ factura.folio }}</span>
+      <span class="razon-social" [title]="factura.rutDeudor">{{ factura.razonSocial }}</span>
+    </div>
+    <div class="monto">{{ factura.monto | currency:'CLP':'symbol':'1.0-0' }}</div>
+    <div class="contador" [ngClass]="{
+      'verde': factura.tiempoRestante > 18000,
+      'rojo': factura.tiempoRestante <= 3600
+    }">
+      {{ factura.tiempoRestante | countdown }}
+    </div>
+    <div class="ofertas">
+      <ng-container *ngIf="factura.ofertas > 0; else sinOfertas">
+        {{ factura.ofertas }} ofertas — Tasa a batir: {{ factura.tasaMinima | number:'1.2-2' }}%
+      </ng-container>
+      <ng-template #sinOfertas>
+        <span class="badge gris">Sin ofertas activas</span>
+      </ng-template>
+    </div>
+  </div>
+</div>

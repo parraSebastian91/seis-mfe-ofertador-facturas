@@ -1,0 +1,92 @@
+.filtros-bar {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.filtros-bar button {
+  background: #f5f7fa;
+  border: 1.5px solid #b0bec5;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1.2rem;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.2s, border 0.2s;
+}
+.filtros-bar button.activo {
+  background: #2196f3;
+  color: #fff;
+  border-color: #1976d2;
+}
+.facturas-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.factura-tarjeta {
+  background: #fff;
+  border: 1.5px solid #dbe1ea;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+  position: relative;
+}
+.factura-tarjeta.nueva {
+  animation: entrada-nueva 0.8s;
+  box-shadow: 0 0 0 2px #2196f3;
+}
+@keyframes entrada-nueva {
+  0% { box-shadow: 0 0 0 0 #2196f3; }
+  60% { box-shadow: 0 0 0 6px #2196f3; }
+  100% { box-shadow: 0 0 0 2px #2196f3; }
+}
+.cabecera {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+.folio {
+  font-weight: bold;
+  color: #0b8f5e;
+}
+.razon-social {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.monto {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0.5rem 0;
+}
+.contador {
+  font-size: 1rem;
+  font-weight: 600;
+}
+.contador.verde {
+  color: #0b8f5e;
+}
+.contador.rojo {
+  color: #e53935;
+  animation: parpadeo 1s infinite alternate;
+}
+@keyframes parpadeo {
+  from { opacity: 1; }
+  to { opacity: 0.5; }
+}
+.ofertas {
+  margin-top: 0.5rem;
+}
+.badge.gris {
+  background: #e0e0e0;
+  color: #666;
+  border-radius: 0.5rem;
+  padding: 0.2rem 0.7rem;
+  font-size: 0.95em;
+}
