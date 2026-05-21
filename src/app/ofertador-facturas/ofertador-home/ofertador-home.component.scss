@@ -1,5 +1,66 @@
 .dashboard-wrapper {
-  padding: 1.5rem;
+  display: flex;
+  gap: 2.5rem;
+  align-items: flex-start;
+  flex-direction: column;
+  margin: 0 1.5em 0.5em 1.5em;
+  color: black;
+
+  .market-container {
+    width: 100%;
+    display: flex;
+    gap: 2rem;
+    height: auto;
+
+    .marketplace {
+      flex: 0 0 300px;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      max-height: 100vh;
+    }
+
+    .market-details {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      max-height: calc(100vh - 220px);
+      overflow-y: auto;
+      min-height: 0;
+
+      .estadisticas {
+        flex: 0 0 auto;
+      }
+
+      .factura-detail {
+        flex: 1;
+        display: flex;
+        gap: 1.5rem;
+        min-height: 0;
+
+        .visor-wrapper {
+          flex: 3;
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          min-height: 0;
+
+          .visor-documental {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+          }
+        }
+
+        .ofertador {
+          flex: 1;
+          min-height: 0;
+        }
+      }
+    }
+  }
 }
 
 h1 {

@@ -1,51 +1,85 @@
 <div class="calculadora">
   <h4>Calculadora de Parámetros de Liquidación</h4>
   <form (ngSubmit)="$event.preventDefault()">
-    <div class="campo">
-      <label>Porcentaje de Anticipo (%)</label>
-      <input type="number" min="10" max="100" [(ngModel)]="porcentajeAnticipo" name="anticipo" (input)="onInputChange()" [disabled]="mostrarOverlayCambios">
-      <input type="range" min="10" max="100" [(ngModel)]="porcentajeAnticipo" name="slider" (input)="onSliderChange($event)" [disabled]="mostrarOverlayCambios">
+    <div class="anticipo">
+      <input type="range" class="slider-anticipo" min="10" max="100" [(ngModel)]="porcentajeAnticipo" name="slider"
+        (input)="onSliderChange($event)" [disabled]="mostrarOverlayCambios">
+      <div class="anticipo-row">
+        <div class="label">
+          <label>Porcentaje de Anticipo (%)</label>
+        </div>
+        <div class="input">
+          <input type="number" min="10" max="100" [(ngModel)]="porcentajeAnticipo" name="anticipo"
+            (input)="onInputChange()" [disabled]="mostrarOverlayCambios">
+        </div>
+      </div>
     </div>
     <div class="campo">
       <div class="tasa-header">
         <label>Tasa de Interés Mensual (%)</label>
-        <button 
-          class="btn-match-beat" 
-          (click)="matchAndBeat()"
-          [disabled]="!hayOfertasCompetidoras || mostrarOverlayCambios"
-          [title]="obtenerTooltipMatchAndBeat()">
+        <button class="btn-match-beat" (click)="matchAndBeat()"
+          [disabled]="!hayOfertasCompetidoras || mostrarOverlayCambios" [title]="obtenerTooltipMatchAndBeat()">
           Match & Beat
         </button>
       </div>
-      <div class="mejor-oferta">
-        <span *ngIf="hayOfertasCompetidoras && mejorTasaMercado !== null; else sinOfertas">
-          Mejor oferta actual: {{ mejorTasaMercado }}%
-        </span>
-        <ng-template #sinOfertas>
-          <span>Sin ofertas activas</span>
-        </ng-template>
+
+      <div class="ofertas">
+        <div class="mejor-oferta">
+          <span *ngIf="hayOfertasCompetidoras && mejorTasaMercado !== null; else sinOfertas">
+            Mejor oferta actual: {{ mejorTasaMercado }}%
+          </span>
+          <ng-template #sinOfertas>
+            <span>Sin ofertas activas</span>
+          </ng-template>
+        </div>
+
+        <div class="input">
+          <input type="number" min="0" [max]="tasaMaxima" step="0.01" [(ngModel)]="tasaInteres" name="tasa"
+            (input)="onInputChange()" [disabled]="mostrarOverlayCambios">
+          <span class="max-tasa">Máx: {{ tasaMaxima }}%</span>
+        </div>
       </div>
-      <input type="number" min="0" [max]="tasaMaxima" step="0.01" [(ngModel)]="tasaInteres" name="tasa" (input)="onInputChange()" [disabled]="mostrarOverlayCambios">
-      <span class="max-tasa">Máx: {{ tasaMaxima }}%</span>
+
       <div *ngIf="mostrarMensajeMatchAndBeat" class="mensaje-match-beat">
         {{ mensajeMatchAndBeat }}
       </div>
+
     </div>
     <div class="campo">
-      <label>Comisión de Estructuración ($)</label>
-      <input type="number" min="0" [(ngModel)]="comisionEstructuracion" name="comision" (input)="onInputChange()" [disabled]="mostrarOverlayCambios">
+      <div class="label">
+        <label>Comisión de Estructuración ($)</label>
+      </div>
+      <div class="input">
+        <input type="number" min="0" [(ngModel)]="comisionEstructuracion" name="comision" (input)="onInputChange()"
+          [disabled]="mostrarOverlayCambios">
+      </div>
     </div>
     <div class="campo">
-      <label>Gastos Operacionales ($)</label>
-      <input type="number" min="0" [(ngModel)]="gastosOperacionales" name="gastos" (input)="onInputChange()" [disabled]="mostrarOverlayCambios">
+      <div class="label">
+        <label>Gastos Operacionales ($)</label>
+      </div>
+      <div class="input">
+        <input type="number" min="0" [(ngModel)]="gastosOperacionales" name="gastos" (input)="onInputChange()"
+          [disabled]="mostrarOverlayCambios">
+      </div>
     </div>
     <div class="campo">
-      <label>Gasto de Contrato ($)</label>
-      <input type="number" min="0" [(ngModel)]="gastoContrato" name="contrato" (input)="onInputChange()" [disabled]="mostrarOverlayCambios">
+      <div class="label">
+        <label>Gasto de Contrato ($)</label>
+      </div>
+      <div class="input">
+        <input type="number" min="0" [(ngModel)]="gastoContrato" name="contrato" (input)="onInputChange()"
+          [disabled]="mostrarOverlayCambios">
+      </div>
     </div>
     <div class="campo">
-      <label>Gasto de Apertura ($)</label>
-      <input type="number" min="0" [(ngModel)]="gastoApertura" name="apertura" (input)="onInputChange()" [disabled]="mostrarOverlayCambios">
+      <div class="label">
+        <label>Gasto de Apertura ($)</label>
+      </div>
+      <div class="input">
+        <input type="number" min="0" [(ngModel)]="gastoApertura" name="apertura" (input)="onInputChange()"
+          [disabled]="mostrarOverlayCambios">
+      </div>
     </div>
   </form>
   <div class="resultados">
@@ -55,8 +89,6 @@
     <div *ngIf="advertenciaCupo" class="advertencia">{{ advertenciaCupo }}</div>
   </div>
 
-  <app-overlay-cambios 
-    [mostrar]="mostrarOverlayCambios" 
-    [cambio]="cambioActual">
+  <app-overlay-cambios [mostrar]="mostrarOverlayCambios" [cambio]="cambioActual">
   </app-overlay-cambios>
 </div>

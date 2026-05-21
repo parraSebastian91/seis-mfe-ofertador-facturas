@@ -1,58 +1,50 @@
 <app-toast-container></app-toast-container>
 
-<app-modal-confirmacion-oferta
-  [mostrar]="mostrarModalConfirmacion"
-  [resumen]="resumenOfertaModal"
-  (confirmado)="onOfertaConfirmada()"
-  (cancelado)="onOfertaCancelada()">
+<app-modal-confirmacion-oferta [mostrar]="mostrarModalConfirmacion" [resumen]="resumenOfertaModal"
+  (confirmado)="onOfertaConfirmada()" (cancelado)="onOfertaCancelada()">
 </app-modal-confirmacion-oferta>
 
 <section class="dashboard-wrapper" style="display: flex; gap: 2.5rem; align-items: flex-start;">
-  <div style="flex: 1 1 0; min-width: 340px;">
-    <header>
-      <h1>Marketplace de Facturas</h1>
-      <p>Facturas disponibles en tiempo real para ofertar.</p>
-    </header>
-    <app-facturas-marketplace
-      [facturas]="(facturas$ | async) ?? []"
-      (seleccionarFactura)="seleccionarFactura($event)">
-    </app-facturas-marketplace>
-  </div>
-  <div style="flex: 2 1 0; min-width: 480px;">
-    <app-perfil-riesgo-deudor
-      [historial]="historialPago"
-      [cupo]="cupoDeudor"
-      [cupoAsignado]="cupoAsignado">
-    </app-perfil-riesgo-deudor>
-    <app-visor-documental
-      [url]="urlDocumento"
-      [loading]="loadingDoc"
-      [error]="errorDoc">
-    </app-visor-documental>
-    <app-validador-delta-ocr
-      [comparaciones]="comparacionesOcr">
-    </app-validador-delta-ocr>
-    <app-calculadora-liquidacion
-      [montoFactura]="facturaSeleccionada?.monto || 0"
-      [cupoDisponible]="cupoDeudor?.disponible || 0"
-      [tasaMaxima]="3.5"
-      [mejorTasaMercado]="mejorTasaMercado"
-      [hayOfertasCompetidoras]="hayOfertasCompetidoras"
-      [mostrarOverlayCambios]="mostrarOverlayCambios"
-      [cambioActual]="cambioActual">
-    </app-calculadora-liquidacion>
-    
-    <app-pre-liquidacion
-      [montoFactura]="facturaSeleccionada?.monto || 0"
-      [porcentajeAnticipo]="100"
-      [tasaInteres]="0"
-      [plazoDias]="30"
-      [comisionEstructuracion]="0"
-      [gastosOperacionales]="0"
-      [gastoContrato]="0"
-      [gastoApertura]="0"
-      [permitirEnvio]="facturaSeleccionada !== null && !mostrarOverlayCambios"
-      (enviarOferta)="onEnviarOferta($event)">
-    </app-pre-liquidacion>
+  <header>
+    <h1>Marketplace de Facturas</h1>
+    <p>Facturas disponibles en tiempo real para ofertar.</p>
+  </header>
+
+  <div class="market-container">
+    <div class="marketplace">
+      <app-facturas-marketplace [facturas]="(facturas$ | async) ?? []"
+        (seleccionarFactura)="seleccionarFactura($event)">
+      </app-facturas-marketplace>
+    </div>
+    <div class="market-details">
+      <div class="estadisticas">
+        <app-perfil-riesgo-deudor [historial]="historialPago" [cupo]="cupoDeudor" [cupoAsignado]="cupoAsignado">
+        </app-perfil-riesgo-deudor>
+      </div>
+      <div class="factura-detail">
+        <div class="visor-wrapper">
+          <div class="visor-documental">
+            <app-visor-documental [url]="urlDocumento" [loading]="loadingDoc" [error]="errorDoc">
+            </app-visor-documental>
+            <app-validador-delta-ocr [comparaciones]="comparacionesOcr">
+            </app-validador-delta-ocr>
+          </div>
+        </div>
+        <div class="ofertador">
+          <app-calculadora-liquidacion [montoFactura]="facturaSeleccionada?.monto || 0"
+            [cupoDisponible]="cupoDeudor?.disponible || 0" [tasaMaxima]="3.5" [mejorTasaMercado]="mejorTasaMercado"
+            [hayOfertasCompetidoras]="hayOfertasCompetidoras" [mostrarOverlayCambios]="mostrarOverlayCambios"
+            [cambioActual]="cambioActual">
+          </app-calculadora-liquidacion>
+
+          <app-pre-liquidacion [montoFactura]="facturaSeleccionada?.monto || 0" [porcentajeAnticipo]="100"
+            [tasaInteres]="0" [plazoDias]="30" [comisionEstructuracion]="0" [gastosOperacionales]="0"
+            [gastoContrato]="0" [gastoApertura]="0"
+            [permitirEnvio]="facturaSeleccionada !== null && !mostrarOverlayCambios"
+            (enviarOferta)="onEnviarOferta($event)">
+          </app-pre-liquidacion>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
