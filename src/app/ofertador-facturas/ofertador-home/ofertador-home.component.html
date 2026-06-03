@@ -4,19 +4,40 @@
   (confirmado)="onOfertaConfirmada()" (cancelado)="onOfertaCancelada()">
 </app-modal-confirmacion-oferta>
 
-<section class="dashboard-wrapper" style="display: flex; gap: 2.5rem; align-items: flex-start;">
-  <header>
-    <h1>Marketplace de Facturas</h1>
-    <p>Facturas disponibles en tiempo real para ofertar.</p>
-  </header>
+<!-- ─── Layout: CA-01 responsive (HU-27) ─────────────────────────────────── -->
+<div class="page-layout">
 
-  <div class="market-container">
-    <div class="marketplace">
-      <app-facturas-marketplace [facturas]="(facturas$ | async) ?? []"
-        (seleccionarFactura)="seleccionarFactura($event)">
-      </app-facturas-marketplace>
+  <!-- Drawer overlay (md breakpoint) -->
+  <div class="drawer-overlay" [class.open]="drawerOpen" (click)="drawerOpen = false" (keydown.escape)="drawerOpen = false" aria-hidden="true"></div>
+
+  <!-- Columna 1: Lista de facturas (1/5 lg+, drawer en md) -->
+  <aside class="col-marketplace" [class.drawer-open]="drawerOpen" aria-label="Lista de facturas disponibles">
+    <app-facturas-marketplace
+      [facturaSeleccionadaId]="facturaSeleccionada?.facturaId ?? null"
+      (seleccionarFactura)="seleccionarFactura($event)">
+    </app-facturas-marketplace>
+  </aside>
+
+  <!-- FAB para abrir drawer en mobile/tablet -->
+  <button type="button" class="btn-drawer-fab" (click)="drawerOpen = !drawerOpen"
+    aria-label="Ver lista de facturas" aria-expanded="{{ drawerOpen }}">
+    &#9776;
+  </button>
+
+  <!-- Columna 2-4: Secciones de detalle (4/5 lg+) -->
+  <main class="col-detalle" aria-label="Detalle de factura">
+
+    <!-- Overlay: factura retirada (CA-05) -->
+    <div class="overlay-retirada" *ngIf="!facturaDisponible">
+      <div class="overlay-retirada__box">
+        <p>Esta factura ya no está disponible.</p>
+        <button type="button" class="btn-limpiar-seleccion" (click)="facturaSeleccionada = null; facturaDisponible = true">
+          Seleccionar otra factura
+        </button>
+      </div>
     </div>
-    <div class="market-details">
+
+    <div class="detalle-inner" [class.bloqueado]="!facturaDisponible">
       <div class="estadisticas">
         <app-perfil-riesgo-deudor [historial]="historialPago" [cupo]="cupoDeudor" [cupoAsignado]="cupoAsignado">
         </app-perfil-riesgo-deudor>
@@ -40,11 +61,13 @@
           <app-pre-liquidacion [montoFactura]="facturaSeleccionada?.monto || 0" [porcentajeAnticipo]="100"
             [tasaInteres]="0" [plazoDias]="30" [comisionEstructuracion]="0" [gastosOperacionales]="0"
             [gastoContrato]="0" [gastoApertura]="0"
-            [permitirEnvio]="facturaSeleccionada !== null && !mostrarOverlayCambios"
+            [permitirEnvio]="facturaSeleccionada !== null && !mostrarOverlayCambios && facturaDisponible"
             (enviarOferta)="onEnviarOferta($event)">
           </app-pre-liquidacion>
         </div>
       </div>
     </div>
-  </div>
-</section>
+
+  </main>
+
+</div>

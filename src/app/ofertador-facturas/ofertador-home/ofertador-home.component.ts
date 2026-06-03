@@ -1,18 +1,15 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { FacturaMarketplace } from '../facturas-marketplace/facturas-marketplace.component';
-import { FacturasMarketplaceService } from '../facturas-marketplace/facturas-marketplace.service';
+import { FacturaMarketplace, FacturasMarketplaceService } from '../facturas-marketplace/facturas-marketplace.service';
 import { CambiosFacturaService, CambioFactura } from '../servicios/cambios-factura.service';
 import { ToastService } from '../servicios/toast.service';
-import { ResumenOferta } from '../modal-confirmacion-oferta/modal-confirmacion-oferta.component';
-import { SolicitudEnvioOferta } from '../pre-liquidacion/pre-liquidacion.component';
+import { ResumenOferta, ModalConfirmacionOfertaComponent } from '../modal-confirmacion-oferta/modal-confirmacion-oferta.component';
+import { SolicitudEnvioOferta, PreLiquidacionComponent } from '../pre-liquidacion/pre-liquidacion.component';
 import { FacturasMarketplaceComponent } from '../facturas-marketplace/facturas-marketplace.component';
 import { CalculadoraLiquidacionComponent } from '../calculadora-liquidacion/calculadora-liquidacion.component';
-import { PreLiquidacionComponent } from '../pre-liquidacion/pre-liquidacion.component';
-import { ModalConfirmacionOfertaComponent } from '../modal-confirmacion-oferta/modal-confirmacion-oferta.component';
 import { ToastContainerComponent } from '../toast-container/toast-container.component';
 import { VisorDocumentalComponent } from '../visor-documental/visor-documental.component';
 import { ValidadorDeltaOcrComponent } from '../validador-delta-ocr/validador-delta-ocr.component';
@@ -37,7 +34,6 @@ import { PerfilRiesgoDeudorComponent } from '../perfil-riesgo-deudor/perfil-ries
   ]
 })
 export class DashboardHomeComponent implements OnInit, OnDestroy {
-  facturas$: Observable<FacturaMarketplace[]>;
   facturaSeleccionada: FacturaMarketplace | null = null;
   urlDocumento: string | null = null;
   loadingDoc = false;
@@ -46,7 +42,7 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
   historialPago: any = null;
   cupoDeudor: any = null;
   cupoAsignado = true;
-  
+
   // Match & Beat
   mejorTasaMercado: number | null = null;
   hayOfertasCompetidoras = false;
@@ -55,25 +51,45 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
   mostrarOverlayCambios = false;
   cambioActual: CambioFactura | null = null;
 
+  // Factura retirada overlay (CA-05, HU-27)
+  facturaDisponible = true;
+  drawerOpen = false;
+
   // Modal Confirmación
   mostrarModalConfirmacion = false;
   resumenOfertaModal: ResumenOferta | null = null;
 
-  private destroy$ = new Subject<void>();
+  private readonly destroy$ = new Subject<void>();
 
   constructor(
-    private facturasService: FacturasMarketplaceService,
-    private cambiosService: CambiosFacturaService,
-    private toastService: ToastService
-  ) {
-    this.facturas$ = this.facturasService.facturas$;
-  }
+    private readonly facturasService: FacturasMarketplaceService,
+    private readonly cambiosService: CambiosFacturaService,
+    private readonly toastService: ToastService
+  ) {}
 
   ngOnInit() {
-    // Suscribirse a los cambios de facturas
+    // ── Marketplace WS (HU-27) ──────────────────────────────────────────────
+    this.facturasService.joinChannel();
+    this.facturasService.loadInitial();
+
+    this.facturasService.facturaRetirada$.pipe(takeUntil(this.destroy$)).subscribe((facturaId: string) => {
+      if (this.facturaSeleccionada?.facturaId === facturaId) {
+        this.facturaDisponible = false;
+      }
+    });
+
+    this.facturasService.miOfertaAceptada$.pipe(takeUntil(this.destroy$)).subscribe((_facturaId: string) => {
+      this.toastService.mostrar(
+        `¡Tu oferta sobre la factura fue aceptada!`,
+        'exito',
+        6000
+      );
+    });
+
+    // ── Cambios de factura (legado) ─────────────────────────────────────────
     this.cambiosService.cambiosPorFactura$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(cambio => {
+      .subscribe((cambio: CambioFactura | null) => {
         if (cambio) {
           this.procesarCambioFactura(cambio);
         }
@@ -81,12 +97,15 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.facturasService.leaveChannel();
     this.destroy$.next();
     this.destroy$.complete();
   }
 
   seleccionarFactura(factura: FacturaMarketplace) {
     this.facturaSeleccionada = factura;
+    this.facturaDisponible = true;
+    this.drawerOpen = false;
     this.cambiosService.seleccionarFactura(factura.folio);
     this.cargarDocumento(factura);
     this.simularComparacionOcr(factura);
@@ -227,9 +246,9 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
   simularMejorTasaMercado(factura: FacturaMarketplace) {
     // Simulación de mejor tasa del mercado por factura
     const tasasPorFactura: { [key: string]: { tasa: number; hayOfertas: boolean } } = {
-      '45900': { tasa: 2.20, hayOfertas: true },
+      '45900': { tasa: 2.2, hayOfertas: true },
       '45901': { tasa: 2.15, hayOfertas: true },
-      '45902': { tasa: 2.50, hayOfertas: true },
+      '45902': { tasa: 2.5, hayOfertas: true },
       '45903': { tasa: 0, hayOfertas: false }, // Sin ofertas
       '45904': { tasa: 1.95, hayOfertas: true }
     };
@@ -241,7 +260,7 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
     } else {
       // Default: tasa aleatoria entre 1.90 y 2.50
       this.hayOfertasCompetidoras = true;
-      this.mejorTasaMercado = Math.random() * (2.50 - 1.90) + 1.90;
+      this.mejorTasaMercado = Math.random() * (2.5 - 1.9) + 1.9;
       this.mejorTasaMercado = Math.round(this.mejorTasaMercado * 100) / 100;
     }
   }

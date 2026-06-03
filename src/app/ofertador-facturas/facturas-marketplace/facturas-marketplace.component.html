@@ -1,32 +1,110 @@
-<div class="filtros-bar">
-  <button (click)="aplicarFiltro(filtroActivo === 'preferidas' ? 'ninguno' : 'preferidas')"
-    [class.activo]="filtroActivo === 'preferidas'">Mis Preferidas</button>
-  <button (click)="aplicarFiltro(filtroActivo === 'liquidez' ? 'ninguno' : 'liquidez')"
-    [class.activo]="filtroActivo === 'liquidez'">Alta Liquidez</button>
-  <button (click)="aplicarFiltro(filtroActivo === 'reloj' ? 'ninguno' : 'reloj')"
-    [class.activo]="filtroActivo === 'reloj'">Reloj de Arena</button>
+<!-- ─── Sticky header: buscador + chips ───────────────────────────────────── -->
+<div class="col-header">
+  <div class="search-wrap">
+    <input
+      type="search"
+      class="search-input"
+      placeholder="Buscar por deudor o folio..."
+      [(ngModel)]="textoBusqueda"
+      (ngModelChange)="onBusquedaChange()"
+      aria-label="Buscar facturas" />
+  </div>
+
+  <div class="chips-wrap" aria-label="Filtros rápidos">
+    <button type="button" class="chip"
+      [class.active]="filtroPreferidos"
+      (click)="toggleFiltro('preferidos')"
+      [attr.aria-pressed]="filtroPreferidos">
+      &#9733; Preferidos
+    </button>
+    <button type="button" class="chip"
+      [class.active]="filtroMasRecientes"
+      (click)="toggleFiltro('masRecientes')"
+      [attr.aria-pressed]="filtroMasRecientes">
+      &#8593; Más recientes
+    </button>
+    <button type="button" class="chip"
+      [class.active]="filtroAltaLiquidez"
+      (click)="toggleFiltro('altaLiquidez')"
+      [attr.aria-pressed]="filtroAltaLiquidez">
+      &#128200; Alta liquidez
+    </button>
+  </div>
 </div>
 
-<div class="facturas-lista">
-  <div *ngFor="let factura of facturasFiltradas" class="factura-tarjeta" [class.nueva]="factura.nueva" (click)="onSeleccionar(factura)">
-    <div class="cabecera">
-      <span class="folio">#{{ factura.folio }}</span>
-      <span class="razon-social" [title]="factura.rutDeudor">{{ factura.razonSocial }}</span>
+<!-- ─── Scrollable list ────────────────────────────────────────────────────── -->
+<div class="lista-scroll" #listaScroll>
+
+  <!-- Skeleton: initial load -->
+  <ng-container *ngIf="isLoading">
+    <div class="card-skeleton" *ngFor="let s of skeletonItems" aria-hidden="true">
+      <div class="skel skel-header"></div>
+      <div class="skel skel-amount"></div>
+      <div class="skel skel-chip"></div>
     </div>
-    <div class="monto">{{ factura.monto | currency:'CLP':'symbol':'1.0-0' }}</div>
-    <div class="contador" [ngClass]="{
-      'verde': factura.tiempoRestante > 18000,
-      'rojo': factura.tiempoRestante <= 3600
-    }">
-      {{ factura.tiempoRestante | countdown }}
-    </div>
-    <div class="ofertas">
-      <ng-container *ngIf="factura.ofertas > 0; else sinOfertas">
-        {{ factura.ofertas }} ofertas — Tasa a batir: {{ factura.tasaMinima | number:'1.2-2' }}%
-      </ng-container>
-      <ng-template #sinOfertas>
-        <span class="badge gris">Sin ofertas activas</span>
-      </ng-template>
-    </div>
+  </ng-container>
+
+  <!-- Empty: no facturas disponibles -->
+  <div class="empty-state" *ngIf="!isLoading && allFacturas.length === 0">
+    <p>No hay facturas disponibles en este momento.</p>
   </div>
+
+  <!-- Empty: filtros sin resultados -->
+  <div class="empty-state" *ngIf="!isLoading && allFacturas.length > 0 && facturasFiltradas.length === 0">
+    <ng-container *ngIf="emptyStatePreferidos; else emptyFiltros">
+      <p>Aún no tienes clientes preferidos.<br>Los clientes con los que hayas cerrado operaciones aparecerán aquí.</p>
+    </ng-container>
+    <ng-template #emptyFiltros>
+      <p>No hay facturas que coincidan con los filtros activos.</p>
+      <button type="button" class="btn-limpiar" (click)="limpiarFiltros()">Limpiar filtros</button>
+    </ng-template>
+  </div>
+
+  <!-- ─── Cards ───────────────────────────────────────────────────────────── -->
+  <button type="button" class="factura-card"
+    *ngFor="let factura of facturasFiltradas; trackBy: trackByFacturaId"
+    [class.nueva]="factura.nueva"
+    [class.seleccionada]="factura.facturaId === facturaSeleccionadaId"
+    (click)="onSeleccionar(factura)"
+    [attr.aria-label]="'Factura ' + factura.folio + ', ' + factura.razonSocial"
+    [attr.aria-pressed]="factura.facturaId === facturaSeleccionadaId">
+
+    <!-- Indicador preferido -->
+    <span class="badge-preferido" *ngIf="factura.esPreferido" title="Cliente preferido" aria-label="Cliente preferido">
+      &#9733;
+    </span>
+
+    <div class="card-header">
+      <span class="folio">Factura #{{ factura.folio }}</span>
+      <span class="razon-social" [title]="factura.razonSocial">{{ factura.razonSocial }}</span>
+    </div>
+
+    <div class="monto">{{ factura.monto | currency:'CLP':'$':'1.0-0' }}</div>
+
+    <!-- OfferChip (CA-04) -->
+    <div class="offer-chip"
+      [class.sin-ofertas]="factura.cantidadOfertas === 0"
+      [class.con-ofertas]="factura.cantidadOfertas > 0">
+      <ng-container *ngIf="factura.cantidadOfertas > 0; else sinOfertas">
+        {{ factura.cantidadOfertas }} {{ factura.cantidadOfertas === 1 ? 'oferta' : 'ofertas' }}
+        &middot; Tasa: {{ factura.tasaMinima | number:'1.2-2' }}%
+      </ng-container>
+      <ng-template #sinOfertas>Sin ofertas activas</ng-template>
+    </div>
+
+    <!-- MyActiveOfferBadge (CA-04) -->
+    <div class="my-offer-badge" *ngIf="factura.tieneOfertaPropia">
+      &#10003; Tu oferta activa
+    </div>
+
+  </button>
+
+  <!-- Sentinel para infinite scroll (CA-06) -->
+  <div #scrollSentinel class="scroll-sentinel" aria-hidden="true"></div>
+
+  <!-- Loading more -->
+  <div class="loading-more" *ngIf="isLoadingMore">
+    <span>Cargando más facturas...</span>
+  </div>
+
 </div>
