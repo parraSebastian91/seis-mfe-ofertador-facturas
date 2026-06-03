@@ -1,0 +1,35 @@
+<div class="visor-bg">
+  <div class="visor-toolbar">
+    <button (click)="zoomIn()">+</button>
+    <button (click)="zoomOut()">−</button>
+    <button (click)="resetView()">Reset</button>
+    <button (click)="rotate()">⟳</button>
+  </div>
+  <div class="visor-canvas"
+    [class.loading]="loading"
+    [class.error]="error"
+    (mousedown)="onMouseDown($event)"
+    (mousemove)="onMouseMove($event)"
+    (mouseup)="onMouseUp()"
+    (mouseleave)="onMouseLeave()"
+    (wheel)="onWheel($event)"
+    [style.cursor]="dragging ? 'grabbing' : 'grab'">
+    <ng-container *ngIf="loading">
+      <div class="skeleton"></div>
+    </ng-container>
+    <ng-container *ngIf="error">
+      <div class="error-msg">
+        No se pudo cargar el documento.
+        <button>Reintentar</button>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="!loading && !error && url">
+      <img [src]="url"
+        [style.transform]="'translate(' + panX + 'px,' + panY + 'px) scale(' + zoom + ') rotate(' + rotation + 'deg)'"
+        class="factura-img"
+        draggable="false"
+        (dragstart)="$event.preventDefault()"
+      />
+    </ng-container>
+  </div>
+</div>

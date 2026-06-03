@@ -1,0 +1,72 @@
+.visor-bg {
+  background: #1e1e1e;
+  min-height: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.visor-toolbar {
+  position: absolute;
+  left: 50%;
+  bottom: 1.5rem;
+  transform: translateX(-50%);
+  background: rgba(30,30,30,0.85);
+  border-radius: 2rem;
+  padding: 0.5rem 1.5rem;
+  display: flex;
+  gap: 1.2rem;
+  z-index: 2;
+}
+.visor-toolbar button {
+  background: #fff;
+  border: none;
+  border-radius: 1rem;
+  font-size: 1.3rem;
+  padding: 0.3rem 1.1rem;
+  opacity: 0.85;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.visor-toolbar button:hover {
+  background: #2196f3;
+  color: #fff;
+}
+.visor-canvas {
+  width: 100%;
+  min-height: 480px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.skeleton {
+  width: 420px;
+  height: 600px;
+  background: linear-gradient(90deg, #2c2c2c 25%, #444 50%, #2c2c2c 75%);
+  border-radius: 1.2rem;
+  animation: skeleton-pulse 1.2s infinite linear;
+}
+@keyframes skeleton-pulse {
+  0% { opacity: 0.7; }
+  50% { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+.error-msg {
+  color: #fff;
+  background: #e53935;
+  padding: 1.2rem 2rem;
+  border-radius: 1rem;
+  text-align: center;
+}
+.factura-img {
+  max-width: 90vw;
+  max-height: 70vh;
+  user-select: none;
+  pointer-events: none;
+  box-shadow: 0 2px 16px #000a;
+  background: #fff;
+  border-radius: 1.2rem;
+}

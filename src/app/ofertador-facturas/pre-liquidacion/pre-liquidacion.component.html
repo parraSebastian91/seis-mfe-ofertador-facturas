@@ -1,0 +1,50 @@
+<div class="pre-liquidacion-card" *ngIf="montoFactura > 0; else vacio">
+  <div class="titulo">ESTRUCTURA DE LIQUIDACIÓN</div>
+  <div class="linea">
+    <span>Plazo de la Operación:</span>
+    <span>{{ plazoDias }} días</span>
+  </div>
+  <div class="separador"></div>
+  <div class="linea">
+    <span>Monto Anticipado ({{ porcentajeAnticipo }}%):</span>
+    <span>${{ montoAnticipado | number:'1.0-0' }}</span>
+  </div>
+  <div class="linea">
+    <span>Excedente Retenido ({{ 100 - porcentajeAnticipo }}%):</span>
+    <span>${{ excedenteRetenido | number:'1.0-0' }}</span>
+  </div>
+  <div class="separador"></div>
+  <div class="linea negativo">
+    <span>(-) Diferencia de Precio (Interés):</span>
+    <span>- ${{ interes | number:'1.0-0' }}</span>
+  </div>
+  <div class="linea negativo">
+    <span>(-) Subtotal Comisiones/Gastos:</span>
+    <span>- ${{ subtotalGastos | number:'1.0-0' }}</span>
+  </div>
+  <div class="linea negativo">
+    <span>(-) IVA (19% sobre Gastos):</span>
+    <span>- ${{ iva | number:'1.0-0' }}</span>
+  </div>
+  <div class="separador fuerte"></div>
+  <div class="linea giro">
+    <span>GIRO LÍQUIDO AL CLIENTE:</span>
+    <span>${{ giroLiquido | number:'1.0-0' }}</span>
+  </div>
+  <div class="separador"></div>
+  <div class="linea margen">
+    <span>Margen Bruto Operación (Utilidad):</span>
+    <span>${{ margenBruto | number:'1.0-0' }}</span>
+  </div>
+  <button 
+    class="btn-enviar-oferta" 
+    (click)="onEnviarOferta()"
+    [disabled]="!permitirEnvio">
+    Enviar Oferta Firme
+  </button>
+</div>
+<ng-template #vacio>
+  <div class="pre-liquidacion-card vacio">
+    <span>Complete los parámetros para ver la pre-liquidación.</span>
+  </div>
+</ng-template>

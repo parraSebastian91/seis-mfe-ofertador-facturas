@@ -1,0 +1,67 @@
+.validador-ocr {
+  margin-top: 2rem;
+  background: #23272e;
+  border-radius: 1.2rem;
+  padding: 1.5rem 2rem;
+  color: #fff;
+  box-shadow: 0 2px 12px #0002;
+}
+.banner-ok {
+  background: #1bbf5c;
+  color: #fff;
+  padding: 0.7rem 1.2rem;
+  border-radius: 0.7rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  text-align: center;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0.7rem;
+}
+th, td {
+  padding: 0.5rem 0.7rem;
+  text-align: left;
+}
+th {
+  background: #2c313a;
+}
+tbody tr.coincide {
+  background: #1e2e1e;
+}
+tbody tr.alerta {
+  background: #ff9800cc;
+  color: #fff;
+}
+tbody tr.prioridad-alta {
+  background: #e53935cc;
+  color: #fff;
+}
+.no-legible {
+  color: #b0bec5;
+  font-style: italic;
+}
+.check {
+  color: #1bbf5c;
+  font-size: 1.3em;
+  font-weight: bold;
+}
+.alerta-icon {
+  color: #ffeb3b;
+  font-size: 1.2em;
+}
+.gris {
+  color: #b0bec5;
+}
+.alerta-msg {
+  margin-top: 0.5rem;
+  background: #ff9800;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+}
+.alerta-msg.prioridad-alta {
+  background: #e53935;
+}

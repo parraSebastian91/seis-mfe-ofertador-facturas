@@ -1,0 +1,46 @@
+<div class="validador-ocr">
+  <ng-container *ngIf="comparaciones.length > 0; else sinDatos">
+    <ng-container *ngIf="todosCoinciden()">
+      <div class="banner-ok">Documento validado — Todos los campos coinciden con el OCR.</div>
+    </ng-container>
+    <table>
+      <thead>
+        <tr>
+          <th>Campo</th>
+          <th>Declarado</th>
+          <th>Leído por OCR</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let c of comparaciones"
+            [class.coincide]="c.coincide"
+            [class.alerta]="!c.coincide && !c.noLegible"
+            [class.prioridad-alta]="c.prioridad === 'alta'">
+          <td>{{ c.campo }}</td>
+          <td>{{ c.declarado }}</td>
+          <td [class.no-legible]="c.noLegible">{{ c.noLegible ? 'No legible' : c.ocr }}</td>
+          <td>
+            <ng-container *ngIf="c.noLegible">
+              <span class="gris">No legible</span>
+            </ng-container>
+            <ng-container *ngIf="c.coincide && !c.noLegible">
+              <span class="check">✓</span>
+            </ng-container>
+            <ng-container *ngIf="!c.coincide && !c.noLegible">
+              <span class="alerta-icon">&#9888;</span>
+            </ng-container>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <ng-container *ngFor="let c of comparaciones">
+      <div *ngIf="c.alerta" class="alerta-msg" [class.prioridad-alta]="c.prioridad === 'alta'">
+        {{ c.alerta }}
+      </div>
+    </ng-container>
+  </ng-container>
+  <ng-template #sinDatos>
+    <div class="gris">Sin datos de OCR para esta factura.</div>
+  </ng-template>
+</div>
