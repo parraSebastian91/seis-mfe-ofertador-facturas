@@ -14,7 +14,7 @@ export interface Oferta {
 
 @Injectable({ providedIn: 'root' })
 export class OfertasService {
-  private ofertasEnviadas = new Map<string, Oferta>();
+  private readonly ofertasEnviadas = new Map<string, Oferta>();
 
   enviarOferta(oferta: Oferta): Observable<{ success: boolean; offerId: string }> {
     // Simular validación del servidor

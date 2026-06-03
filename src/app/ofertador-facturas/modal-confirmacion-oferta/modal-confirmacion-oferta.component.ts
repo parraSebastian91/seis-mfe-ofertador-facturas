@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit, HostListener } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OfertasService, Oferta } from '../servicios/ofertas.service';
 
@@ -16,30 +16,23 @@ export interface ResumenOferta {
   standalone: true,
   imports: [CommonModule],
   templateUrl: './modal-confirmacion-oferta.component.html',
-  styleUrls: ['./modal-confirmacion-oferta.component.scss']
+  styleUrls: ['./modal-confirmacion-oferta.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ModalConfirmacionOfertaComponent implements OnInit {
+export class ModalConfirmacionOfertaComponent {
   @Input() mostrar = false;
   @Input() resumen: ResumenOferta | null = null;
-  
-  @Output() confirmado = new EventEmitter<void>();
-  @Output() cancelado = new EventEmitter<void>();
+
+  @Output() readonly confirmado = new EventEmitter<void>();
+  @Output() readonly cancelado = new EventEmitter<void>();
 
   cargando = false;
   error: string | null = null;
 
-  constructor(private ofertasService: OfertasService) {}
+  constructor(private readonly ofertasService: OfertasService) {}
 
-  ngOnInit() {}
-
-  @HostListener('keydown.escape', ['$event'])
-  onEscapeKey(event: any) {
-    if (!this.cargando) {
-      this.cancelar();
-    }
-  }
-
-  onOverlayClick() {
+  @HostListener('document:keydown.escape', ['$event'])
+  onEscapeKey(_event: KeyboardEvent) {
     if (!this.cargando) {
       this.cancelar();
     }
@@ -52,7 +45,7 @@ export class ModalConfirmacionOfertaComponent implements OnInit {
     this.error = null;
 
     const oferta: Oferta = {
-      id: `oferta-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: `oferta-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
       folioFactura: this.resumen.folioFactura,
       montoTransferencia: this.resumen.montoTransferencia,
       excedenteRetenido: this.resumen.excedenteRetenido,

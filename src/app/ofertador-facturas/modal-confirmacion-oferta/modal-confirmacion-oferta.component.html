@@ -1,7 +1,12 @@
-<div *ngIf="mostrar" class="modal-overlay" (click)="onOverlayClick()">
-  <div class="modal" (click)="$event.stopPropagation()">
+<div *ngIf="mostrar" class="modal-overlay"
+  (click)="!cargando && cancelar()"
+  (keydown.escape)="!cargando && cancelar()">
+  <dialog open class="modal"
+    (click)="$event.stopPropagation()"
+    (keydown)="$event.stopPropagation()"
+    aria-labelledby="modal-titulo">
     <div class="modal-header">
-      <h2>¿Confirmar oferta firme?</h2>
+      <h2 id="modal-titulo">¿Confirmar oferta firme?</h2>
     </div>
 
     <div class="modal-content" *ngIf="resumen && !error">
@@ -45,5 +50,5 @@
         </span>
       </button>
     </div>
-  </div>
+  </dialog>
 </div>
