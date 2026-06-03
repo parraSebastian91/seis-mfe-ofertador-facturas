@@ -9,7 +9,7 @@ import { ToastService } from '../servicios/toast.service';
 import { ResumenOferta, ModalConfirmacionOfertaComponent } from '../modal-confirmacion-oferta/modal-confirmacion-oferta.component';
 import { SolicitudEnvioOferta, PreLiquidacionComponent } from '../pre-liquidacion/pre-liquidacion.component';
 import { FacturasMarketplaceComponent } from '../facturas-marketplace/facturas-marketplace.component';
-import { CalculadoraLiquidacionComponent } from '../calculadora-liquidacion/calculadora-liquidacion.component';
+import { CalculadoraLiquidacionComponent, LiquidacionCalculada } from '../calculadora-liquidacion/calculadora-liquidacion.component';
 import { ToastContainerComponent } from '../toast-container/toast-container.component';
 import { VisorDocumentalComponent } from '../visor-documental/visor-documental.component';
 import { ValidadorDeltaOcrComponent } from '../validador-delta-ocr/validador-delta-ocr.component';
@@ -47,6 +47,7 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
   cupoAsignado = true;
 
   // Calculadora → header (CA-04 HU-28)
+  liquidacion: LiquidacionCalculada | null = null;
   montoAnticipar = 0;
   cupoExcedido = false;
 
@@ -109,10 +110,17 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  get plazoDias(): number {
+    if (!this.facturaSeleccionada) return 0;
+    const venc = new Date(this.facturaSeleccionada.fechaVencimiento);
+    return Math.ceil((venc.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+  }
+
   seleccionarFactura(factura: FacturaMarketplace) {
     this.facturaSeleccionada = factura;
     this.facturaDisponible = true;
     this.drawerOpen = false;
+    this.liquidacion = null;
     this.montoAnticipar = 0;
     this.cupoExcedido = false;
     this.cambiosService.seleccionarFactura(factura.folio);

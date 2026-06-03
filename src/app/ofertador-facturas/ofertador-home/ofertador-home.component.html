@@ -60,16 +60,19 @@
           </div>
         </div>
         <div class="ofertador">
-          <app-calculadora-liquidacion [montoFactura]="facturaSeleccionada?.monto || 0"
-            [cupoDisponible]="cupoDeudor?.disponible || 0" [tasaMaxima]="3.5" [mejorTasaMercado]="mejorTasaMercado"
-            [hayOfertasCompetidoras]="hayOfertasCompetidoras" [mostrarOverlayCambios]="mostrarOverlayCambios"
+          <app-calculadora-liquidacion
+            [montoFactura]="facturaSeleccionada?.monto || 0"
+            [plazoDias]="plazoDias"
+            [facturaId]="facturaSeleccionada?.facturaId || null"
+            [mejorTasaMercado]="mejorTasaMercado"
+            [hayOfertasCompetidoras]="hayOfertasCompetidoras"
+            [mostrarOverlayCambios]="mostrarOverlayCambios"
             [cambioActual]="cambioActual"
-            (montoAnticiparChange)="montoAnticipar = $event">
+            (liquidacionChange)="liquidacion = $event; montoAnticipar = $event?.montoAnticipado ?? 0">
           </app-calculadora-liquidacion>
 
-          <app-pre-liquidacion [montoFactura]="facturaSeleccionada?.monto || 0" [porcentajeAnticipo]="100"
-            [tasaInteres]="0" [plazoDias]="30" [comisionEstructuracion]="0" [gastosOperacionales]="0"
-            [gastoContrato]="0" [gastoApertura]="0"
+          <app-pre-liquidacion
+            [liquidacion]="liquidacion"
             [permitirEnvio]="facturaSeleccionada !== null && !mostrarOverlayCambios && facturaDisponible && !cupoExcedido"
             (enviarOferta)="onEnviarOferta($event)">
           </app-pre-liquidacion>
