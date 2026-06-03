@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OverlayCambiosComponent } from '../overlay-cambios/overlay-cambios.component';
@@ -11,14 +11,16 @@ import { CambioFactura } from '../servicios/cambios-factura.service';
   standalone: true,
   imports: [CommonModule, FormsModule, OverlayCambiosComponent]
 })
-export class CalculadoraLiquidacionComponent implements OnChanges {
+export class CalculadoraLiquidacionComponent implements OnInit, OnChanges {
   @Input() montoFactura = 12500000;
   @Input() cupoDisponible = 2000000;
   @Input() tasaMaxima = 3.5;
-  @Input() mejorTasaMercado: number | null = 2.20;
+  @Input() mejorTasaMercado: number | null = 2.2;
   @Input() hayOfertasCompetidoras = true;
   @Input() mostrarOverlayCambios = false;
   @Input() cambioActual: CambioFactura | null = null;
+  /** Emite el monto anticipado calculado en tiempo real (CA-04 HU-28) */
+  @Output() readonly montoAnticiparChange = new EventEmitter<number>();
 
   porcentajeAnticipo = 100;
   tasaInteres = 2.35;
@@ -33,7 +35,7 @@ export class CalculadoraLiquidacionComponent implements OnChanges {
   
   // Match & Beat
   diferencialCompetitivo = 0.05;
-  tasaMinimaSistema = 0.50;
+  tasaMinimaSistema = 0.5;
   mensajeMatchAndBeat = '';
   mostrarMensajeMatchAndBeat = false;
 
@@ -66,6 +68,7 @@ export class CalculadoraLiquidacionComponent implements OnChanges {
 
     this.montoAnticipar = Math.round(this.montoFactura * (this.porcentajeAnticipo / 100));
     this.excedenteRetenido = this.montoFactura - this.montoAnticipar;
+    this.montoAnticiparChange.emit(this.montoAnticipar);
 
     if (this.montoAnticipar > this.cupoDisponible) {
       this.advertenciaCupo = `Advertencia: Tu oferta de $${this.montoAnticipar.toLocaleString()} supera el cupo disponible de $${this.cupoDisponible.toLocaleString()} para este deudor.`;

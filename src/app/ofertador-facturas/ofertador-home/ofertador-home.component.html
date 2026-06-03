@@ -39,14 +39,22 @@
 
     <div class="detalle-inner" [class.bloqueado]="!facturaDisponible">
       <div class="estadisticas">
-        <app-perfil-riesgo-deudor [historial]="historialPago" [cupo]="cupoDeudor" [cupoAsignado]="cupoAsignado">
-        </app-perfil-riesgo-deudor>
+        <!-- Sección 2: KPIs cliente/deudor (CA-01…CA-04 HU-28) -->
+        <app-kpis-factura-header
+          [factura]="facturaSeleccionada"
+          [montoAnticipar]="montoAnticipar"
+          (cupoExcedido)="cupoExcedido = $event">
+        </app-kpis-factura-header>
       </div>
       <div class="factura-detail">
         <div class="visor-wrapper">
           <div class="visor-documental">
+            <!-- Sección 3: Visor PDF (CA-05 HU-28) -->
             <app-visor-documental [url]="urlDocumento" [loading]="loadingDoc" [error]="errorDoc">
             </app-visor-documental>
+            <!-- Sección 3: Notas OCR solo lectura (CA-06 HU-28) -->
+            <app-ocr-notes-list [notas]="notasOcr" [readOnly]="true">
+            </app-ocr-notes-list>
             <app-validador-delta-ocr [comparaciones]="comparacionesOcr">
             </app-validador-delta-ocr>
           </div>
@@ -55,13 +63,14 @@
           <app-calculadora-liquidacion [montoFactura]="facturaSeleccionada?.monto || 0"
             [cupoDisponible]="cupoDeudor?.disponible || 0" [tasaMaxima]="3.5" [mejorTasaMercado]="mejorTasaMercado"
             [hayOfertasCompetidoras]="hayOfertasCompetidoras" [mostrarOverlayCambios]="mostrarOverlayCambios"
-            [cambioActual]="cambioActual">
+            [cambioActual]="cambioActual"
+            (montoAnticiparChange)="montoAnticipar = $event">
           </app-calculadora-liquidacion>
 
           <app-pre-liquidacion [montoFactura]="facturaSeleccionada?.monto || 0" [porcentajeAnticipo]="100"
             [tasaInteres]="0" [plazoDias]="30" [comisionEstructuracion]="0" [gastosOperacionales]="0"
             [gastoContrato]="0" [gastoApertura]="0"
-            [permitirEnvio]="facturaSeleccionada !== null && !mostrarOverlayCambios && facturaDisponible"
+            [permitirEnvio]="facturaSeleccionada !== null && !mostrarOverlayCambios && facturaDisponible && !cupoExcedido"
             (enviarOferta)="onEnviarOferta($event)">
           </app-pre-liquidacion>
         </div>

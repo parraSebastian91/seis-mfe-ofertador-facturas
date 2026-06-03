@@ -13,7 +13,8 @@ import { CalculadoraLiquidacionComponent } from '../calculadora-liquidacion/calc
 import { ToastContainerComponent } from '../toast-container/toast-container.component';
 import { VisorDocumentalComponent } from '../visor-documental/visor-documental.component';
 import { ValidadorDeltaOcrComponent } from '../validador-delta-ocr/validador-delta-ocr.component';
-import { PerfilRiesgoDeudorComponent } from '../perfil-riesgo-deudor/perfil-riesgo-deudor.component';
+import { KpisFacturaHeaderComponent } from '../kpis-factura-header/kpis-factura-header.component';
+import { OcrNotesListComponent, OcrNota } from 'shared-utils';
 
 @Component({
   selector: 'app-ofertador-home',
@@ -30,7 +31,8 @@ import { PerfilRiesgoDeudorComponent } from '../perfil-riesgo-deudor/perfil-ries
     ToastContainerComponent,
     VisorDocumentalComponent,
     ValidadorDeltaOcrComponent,
-    PerfilRiesgoDeudorComponent
+    KpisFacturaHeaderComponent,
+    OcrNotesListComponent
   ]
 })
 export class DashboardHomeComponent implements OnInit, OnDestroy {
@@ -39,9 +41,14 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
   loadingDoc = false;
   errorDoc = false;
   comparacionesOcr: any[] = [];
+  notasOcr: OcrNota[] = [];
   historialPago: any = null;
   cupoDeudor: any = null;
   cupoAsignado = true;
+
+  // Calculadora → header (CA-04 HU-28)
+  montoAnticipar = 0;
+  cupoExcedido = false;
 
   // Match & Beat
   mejorTasaMercado: number | null = null;
@@ -106,10 +113,11 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
     this.facturaSeleccionada = factura;
     this.facturaDisponible = true;
     this.drawerOpen = false;
+    this.montoAnticipar = 0;
+    this.cupoExcedido = false;
     this.cambiosService.seleccionarFactura(factura.folio);
     this.cargarDocumento(factura);
     this.simularComparacionOcr(factura);
-    this.simularPerfilRiesgo(factura);
     this.simularMejorTasaMercado(factura);
   }
 
@@ -201,30 +209,10 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
   simularComparacionOcr(factura: FacturaMarketplace) {
     // Simulación de casos: coincidencia, discrepancia, alerta, no legible
     this.comparacionesOcr = [
-      {
-        campo: 'RUT Emisor',
-        declarado: '76.123.456-7',
-        ocr: '76.123.456-7',
-        coincide: true
-      },
-      {
-        campo: 'RUT Deudor',
-        declarado: factura.rutDeudor,
-        ocr: factura.rutDeudor,
-        coincide: true
-      },
-      {
-        campo: 'Monto Total',
-        declarado: '$12.500.000',
-        ocr: '$12.500.000',
-        coincide: true
-      },
-      {
-        campo: 'Fecha Emisión',
-        declarado: '2026-05-19',
-        ocr: '2026-05-19',
-        coincide: true
-      },
+      { campo: 'RUT Emisor', declarado: '76.123.456-7', ocr: '76.123.456-7', coincide: true },
+      { campo: 'RUT Deudor', declarado: factura.rutDeudor, ocr: factura.rutDeudor, coincide: true },
+      { campo: 'Monto Total', declarado: '$12.500.000', ocr: '$12.500.000', coincide: true },
+      { campo: 'Fecha Emisión', declarado: '2026-05-19', ocr: '2026-05-19', coincide: true },
       {
         campo: 'Fecha Vencimiento',
         declarado: '2026-06-19',
@@ -233,14 +221,17 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
         alerta: 'Alerta: El plazo real es menor al declarado. Revisar antes de ofertar.',
         prioridad: 'alta'
       },
-      {
-        campo: 'Referencia',
-        declarado: 'N/A',
-        ocr: 'No legible',
-        coincide: false,
-        noLegible: true
-      }
+      { campo: 'Referencia', declarado: 'N/A', ocr: 'No legible', coincide: false, noLegible: true }
     ];
+
+    // Derivar notasOcr para OcrNotesList (CA-06 HU-28)
+    this.notasOcr = this.comparacionesOcr
+      .filter((c: any) => !c.coincide)
+      .map((c: any): OcrNota => ({
+        campo: c.campo,
+        descripcion: c.alerta ?? (c.noLegible ? 'Valor no legible en el PDF.' : `PDF: ${c.ocr} / Formulario: ${c.declarado}`),
+        prioridad: c.prioridad
+      }));
   }
 
   simularMejorTasaMercado(factura: FacturaMarketplace) {
