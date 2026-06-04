@@ -20,7 +20,7 @@
 
   <!-- FAB para abrir drawer en mobile/tablet -->
   <button type="button" class="btn-drawer-fab" (click)="drawerOpen = !drawerOpen"
-    aria-label="Ver lista de facturas" aria-expanded="{{ drawerOpen }}">
+    aria-label="Ver lista de facturas" [attr.aria-expanded]="drawerOpen">
     &#9776;
   </button>
 

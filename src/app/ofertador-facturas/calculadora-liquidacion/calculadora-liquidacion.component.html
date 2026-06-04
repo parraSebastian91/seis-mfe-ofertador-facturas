@@ -108,18 +108,3 @@
   </app-overlay-cambios>
 
 </div>
-
-          [disabled]="mostrarOverlayCambios">
-      </div>
-    </div>
-  </form>
-  <div class="resultados">
-    <div><strong>Monto a anticipar:</strong> ${{ montoAnticipar | number:'1.0-0' }}</div>
-    <div><strong>Excedente retenido:</strong> ${{ excedenteRetenido | number:'1.0-0' }}</div>
-    <div class="excedente-label">El excedente retenido representa el dinero bloqueado hasta el pago del deudor.</div>
-    <div *ngIf="advertenciaCupo" class="advertencia">{{ advertenciaCupo }}</div>
-  </div>
-
-  <app-overlay-cambios [mostrar]="mostrarOverlayCambios" [cambio]="cambioActual">
-  </app-overlay-cambios>
-</div>
