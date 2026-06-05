@@ -105,7 +105,7 @@ export class FacturasMarketplaceService implements OnDestroy {
     this.hasMoreState.next(true);
     this.facturasState.next([]);
     this.isLoadingState.next(true);
-    this.http.get<MarketplacePage>('/api/core/marketplace/facturas?page=1').subscribe({
+    this.http.get<MarketplacePage>('/api/bff/marketplace/facturas?page=1').subscribe({
       next: res => {
         this.minDiasAltaLiquidez = res.minDiasAltaLiquidez ?? 30;
         this.currentPage = res.page;
@@ -123,7 +123,7 @@ export class FacturasMarketplaceService implements OnDestroy {
     if (this.isLoadingMoreState.value || !this.hasMoreState.value) { return; }
     this.isLoadingMoreState.next(true);
     const nextPage = this.currentPage + 1;
-    this.http.get<MarketplacePage>(`/api/core/marketplace/facturas?page=${nextPage}`).subscribe({
+    this.http.get<MarketplacePage>(`/api/bff/marketplace/facturas?page=${nextPage}`).subscribe({
       next: res => {
         this.currentPage = res.page;
         this.hasMoreState.next(res.page < res.totalPages);

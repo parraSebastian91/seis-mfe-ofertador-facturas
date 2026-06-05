@@ -35,7 +35,7 @@ export class CalculadoraConfigService {
     if (this.loaded) return;
     this.loaded = true;
 
-    this.http.get<CalculadoraConfig>('/api/core/config/calculadora')
+    this.http.get<CalculadoraConfig>('/api/bff/config/calculadora')
       .pipe(
         tap(cfg => this.configState.next({ ...DEFAULTS, ...cfg })),
         catchError(() => {

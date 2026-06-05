@@ -64,7 +64,7 @@ export class FacturaDetalleHeaderService implements OnDestroy {
 
     // Las tres llamadas en paralelo (CA técnica HU-28)
     const detalle$ = this.http.get<FacturaDetalleData>(
-      `/api/core/marketplace/factura/${facturaId}`
+      `/api/bff/marketplace/factura/${facturaId}`
     ).pipe(
       tap(data => {
         this.detalleState.next(data);
@@ -77,7 +77,7 @@ export class FacturaDetalleHeaderService implements OnDestroy {
     );
 
     const historial$ = this.http.get<HistorialEjecutivo>(
-      `/api/core/ejecutivo/historial/${clienteId}`
+      `/api/bff/ejecutivo/historial/${clienteId}`
     ).pipe(
       tap(data => {
         this.historialState.next(data);
@@ -92,7 +92,7 @@ export class FacturaDetalleHeaderService implements OnDestroy {
     );
 
     const cupo$ = this.http.get<CupoDeudorDetalle>(
-      `/api/core/deudor/${rutDeudor}/cupo`
+      `/api/bff/deudor/${rutDeudor}/cupo`
     ).pipe(
       tap(data => {
         this.cupoState.next(data);
@@ -111,7 +111,7 @@ export class FacturaDetalleHeaderService implements OnDestroy {
     this.loadingHistorialState.next(true);
     this.errorHistorialState.next(false);
 
-    this.http.get<HistorialEjecutivo>(`/api/core/ejecutivo/historial/${clienteId}`)
+    this.http.get<HistorialEjecutivo>(`/api/bff/ejecutivo/historial/${clienteId}`)
       .pipe(
         tap(data => {
           this.historialState.next(data);
