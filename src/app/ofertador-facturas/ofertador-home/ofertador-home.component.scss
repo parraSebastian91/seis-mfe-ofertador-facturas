@@ -202,3 +202,70 @@ $navbar-height: 56px;
     }
   }
 }
+
+// ─── Tablet (≤ 900px): apila visor encima de calculadora ─────────────────────
+
+@media (max-width: 900px) {
+  .page-layout {
+    // La altura fija se convierte en min-height para permitir scroll
+    height: auto;
+    min-height: calc(100dvh - #{$navbar-height});
+    overflow: visible;
+  }
+
+  .col-detalle {
+    overflow: visible;
+  }
+
+  .detalle-inner {
+    height: auto;
+    overflow-y: visible;
+    padding: 1rem;
+    gap: 1rem;
+
+    .factura-detail {
+      flex-direction: column;  // ← clave: apila visor sobre calculadora
+      gap: 1rem;
+      min-height: unset;
+
+      .visor-wrapper {
+        flex: none;
+        min-height: unset;
+
+        .visor-documental {
+          flex: none;
+          min-height: unset;
+        }
+      }
+
+      .ofertador {
+        flex: none;
+        min-height: unset;
+      }
+    }
+  }
+
+  // FAB de lista: reubicarlo sobre la barra de nav en mobile
+  .btn-drawer-fab {
+    bottom: calc(64px + 1rem);
+  }
+}
+
+// ─── Mobile (≤ 700px): reserva espacio barra inferior ────────────────────────
+
+@media (max-width: 700px) {
+  .page-layout {
+    min-height: calc(100dvh - #{$navbar-height});
+  }
+
+  .detalle-inner {
+    padding: 0.75rem;
+    padding-bottom: calc(64px + 1rem); // espacio para bottom nav
+    gap: 0.75rem;
+  }
+
+  .estadisticas {
+    // KPIs en scroll horizontal si no caben
+    overflow-x: auto;
+  }
+}
