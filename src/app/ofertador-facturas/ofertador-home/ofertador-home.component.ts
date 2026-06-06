@@ -1,9 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Injector, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { FacturaMarketplace, FacturasMarketplaceService } from '../facturas-marketplace/facturas-marketplace.service';
+import { FacturaMarketplace, FacturaNuevaExterna, FacturasMarketplaceService } from '../facturas-marketplace/facturas-marketplace.service';
 import { CambiosFacturaService, CambioFactura } from '../servicios/cambios-factura.service';
 import { ToastService } from '../servicios/toast.service';
 import { ResumenOferta, ModalConfirmacionOfertaComponent } from '../modal-confirmacion-oferta/modal-confirmacion-oferta.component';
@@ -14,7 +14,7 @@ import { ToastContainerComponent } from '../toast-container/toast-container.comp
 import { VisorDocumentalComponent } from '../visor-documental/visor-documental.component';
 import { ValidadorDeltaOcrComponent } from '../validador-delta-ocr/validador-delta-ocr.component';
 import { KpisFacturaHeaderComponent } from '../kpis-factura-header/kpis-factura-header.component';
-import { OcrNotesListComponent, OcrNota } from 'shared-utils';
+import { OcrNotesListComponent, OcrNota, UserStateService } from 'shared-utils';
 
 @Component({
   selector: 'app-ofertador-home',
@@ -67,7 +67,13 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
   mostrarModalConfirmacion = false;
   resumenOfertaModal: ResumenOferta | null = null;
 
+  // Banner facturas nuevas de clientes no preferidos
+  nuevasExternas: FacturaNuevaExterna[] = [];
+  get nuevasExternasCount(): number { return this.nuevasExternas.length; }
+
   private readonly destroy$ = new Subject<void>();
+  private readonly injector = inject(Injector);
+  private readonly userStateService = inject(UserStateService);
 
   constructor(
     private readonly facturasService: FacturasMarketplaceService,
@@ -76,16 +82,27 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // ── Marketplace WS (HU-27) ──────────────────────────────────────────────
-    this.facturasService.joinChannel();
-    this.facturasService.loadInitial();
+    // ── Reacciona al cambio de organización (Signal) ────────────────────────
+    effect(() => {
+      const financieraId = this.userStateService.orgSelected();
+      if (!financieraId) { return; }
 
+      // Desconecta canal anterior y reconecta con la nueva org
+      this.facturasService.leaveChannel();
+      this.facturasService.joinChannel(financieraId);
+      this.facturasService.loadPreferidos();
+      this.nuevasExternas = [];
+      this.facturaSeleccionada = null;
+    }, { injector: this.injector });
+
+    // ── Factura retirada del marketplace ────────────────────────────────────
     this.facturasService.facturaRetirada$.pipe(takeUntil(this.destroy$)).subscribe((facturaId: string) => {
       if (this.facturaSeleccionada?.facturaId === facturaId) {
         this.facturaDisponible = false;
       }
     });
 
+    // ── Oferta propia aceptada ───────────────────────────────────────────────
     this.facturasService.miOfertaAceptada$.pipe(takeUntil(this.destroy$)).subscribe((_facturaId: string) => {
       this.toastService.mostrar(
         `¡Tu oferta sobre la factura fue aceptada!`,
@@ -94,7 +111,12 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
       );
     });
 
-    // ── Cambios de factura (legado) ─────────────────────────────────────────
+    // ── Badge de clientes nuevos (canal marketplace:nuevos) ──────────────────
+    this.facturasService.nuevasExternas$.pipe(takeUntil(this.destroy$)).subscribe(externas => {
+      this.nuevasExternas = externas;
+    });
+
+    // ── Cambios de factura (legado) ──────────────────────────────────────────
     this.cambiosService.cambiosPorFactura$
       .pipe(takeUntil(this.destroy$))
       .subscribe((cambio: CambioFactura | null) => {
@@ -108,6 +130,16 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
     this.facturasService.leaveChannel();
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  /** Carga el mercado general bajo demanda (banner "Ver N oportunidades nuevas") */
+  verOportunidadesExternas(): void {
+    this.facturasService.loadMercadoGeneral(null);
+  }
+
+  /** Siguiente página del mercado general */
+  cargarMasOportunidades(): void {
+    this.facturasService.loadMercadoGeneral(this.facturasService.lastCursor);
   }
 
   get plazoDias(): number {

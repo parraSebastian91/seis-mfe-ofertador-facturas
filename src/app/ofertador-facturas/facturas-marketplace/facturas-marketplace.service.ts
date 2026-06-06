@@ -23,16 +23,22 @@ export interface FacturaMarketplace {
 
 interface MarketplacePage {
   data: FacturaMarketplace[];
-  page: number;
-  totalPages: number;
+  nextCursor: string | null;
   minDiasAltaLiquidez: number;
 }
 
+export interface FacturaNuevaExterna {
+  facturaId: string;
+  razonSocial: string;
+  monto: number;
+}
+
 type MarketplaceWsEvent =
-  | { event: 'factura.publicada'; factura: FacturaMarketplace }
-  | { event: 'factura.retirada'; facturaId: string }
+  | { event: 'factura.publicada';     factura: FacturaMarketplace }
+  | { event: 'factura.retirada';      facturaId: string }
   | { event: 'oferta.nueva' | 'oferta.modificada'; facturaId: string; cantidadOfertas: number; tasaMinima: number | null }
-  | { event: 'mi.oferta.aceptada'; facturaId: string };
+  | { event: 'mi.oferta.aceptada';    facturaId: string }
+  | { event: 'factura.nueva.externa'; facturaId: string; razonSocial: string; monto: number };
 
 // ─── Service ──────────────────────────────────────────────────────────────────
 
@@ -47,6 +53,7 @@ export class FacturasMarketplaceService implements OnDestroy {
   private readonly hasMoreState = new BehaviorSubject<boolean>(true);
   private readonly facturaRetirAdaSubject = new Subject<string>();
   private readonly miOfertaAceptadaSubject = new Subject<string>();
+  private readonly nuevasExternasState = new BehaviorSubject<FacturaNuevaExterna[]>([]);
 
   readonly facturas$ = this.facturasState.asObservable();
   readonly isLoading$ = this.isLoadingState.asObservable();
@@ -54,10 +61,14 @@ export class FacturasMarketplaceService implements OnDestroy {
   readonly hasMore$ = this.hasMoreState.asObservable();
   readonly facturaRetirada$ = this.facturaRetirAdaSubject.asObservable();
   readonly miOfertaAceptada$ = this.miOfertaAceptadaSubject.asObservable();
+  /** Facturas de clientes que nunca han operado con esta financiera (solo metadata) */
+  readonly nuevasExternas$ = this.nuevasExternasState.asObservable();
 
   minDiasAltaLiquidez = 30;
-  private currentPage = 0;
+  private _lastCursor: string | null = null;
+  get lastCursor(): string | null { return this._lastCursor; }
   private channelActive = false;
+  private financieraId: string | null = null;
 
   // Arrow fn to preserve `this` reference for add/remove listener
   private readonly onWsMessage = (raw: unknown): void => {
@@ -86,30 +97,51 @@ export class FacturasMarketplaceService implements OnDestroy {
     }
   };
 
-  joinChannel(): void {
+  // Eventos ligeros de clientes nuevos: solo se agrega al badge, no se carga la factura completa
+  private readonly onNewClientEvent = (raw: unknown): void => {
+    const msg = raw as MarketplaceWsEvent;
+    if (msg.event !== 'factura.nueva.externa') { return; }
+    this.nuevasExternasState.next([
+      { facturaId: msg.facturaId, razonSocial: msg.razonSocial, monto: msg.monto },
+      ...this.nuevasExternasState.value
+    ]);
+  };
+
+
+  joinChannel(financieraId: string): void {
     if (this.channelActive) { return; }
     this.channelActive = true;
-    this.socketService.sendMessage('join:marketplace', {});
-    this.socketService.onMessage('marketplace', this.onWsMessage);
+    this.financieraId = financieraId;
+    // Canal principal: el BFF filtra por histórico de relaciones de esta financiera
+    this.socketService.sendMessage('join:marketplace:preferidos', { financieraId });
+    this.socketService.onMessage('marketplace:preferidos', this.onWsMessage);
+    // Canal secundario: solo metadata liviana de clientes nuevos → alimenta el badge
+    this.socketService.sendMessage('join:marketplace:nuevos', { financieraId });
+    this.socketService.onMessage('marketplace:nuevos', this.onNewClientEvent);
   }
 
   leaveChannel(): void {
     if (!this.channelActive) { return; }
     this.channelActive = false;
-    this.socketService.offMessage('marketplace', this.onWsMessage);
-    this.socketService.sendMessage('leave:marketplace', {});
+    this.socketService.offMessage('marketplace:preferidos', this.onWsMessage);
+    this.socketService.sendMessage('leave:marketplace:preferidos', { financieraId: this.financieraId });
+    this.socketService.offMessage('marketplace:nuevos', this.onNewClientEvent);
+    this.socketService.sendMessage('leave:marketplace:nuevos', { financieraId: this.financieraId });
+    this.financieraId = null;
   }
 
-  loadInitial(): void {
-    this.currentPage = 0;
+  /** Carga inicial: solo facturas de clientes preferidos (histórico de operaciones). Respuesta pequeña y rápida. */
+  loadPreferidos(): void {
+    this._lastCursor = null;
     this.hasMoreState.next(true);
     this.facturasState.next([]);
+    this.nuevasExternasState.next([]);
     this.isLoadingState.next(true);
-    this.http.get<MarketplacePage>('/api/bff/marketplace/facturas?page=1').subscribe({
+    this.http.get<MarketplacePage>('/api/bff/marketplace/facturas?scope=preferidos&limit=20').subscribe({
       next: res => {
         this.minDiasAltaLiquidez = res.minDiasAltaLiquidez ?? 30;
-        this.currentPage = res.page;
-        this.hasMoreState.next(res.page < res.totalPages);
+        this._lastCursor = res.nextCursor;
+        this.hasMoreState.next(!!res.nextCursor);
         this.facturasState.next(res.data ?? []);
         this.isLoadingState.next(false);
       },
@@ -119,16 +151,48 @@ export class FacturasMarketplaceService implements OnDestroy {
     });
   }
 
+  /** Paginación por cursor (O(log n)) — evita OFFSET costoso en tablas grandes. */
   loadMore(): void {
     if (this.isLoadingMoreState.value || !this.hasMoreState.value) { return; }
     this.isLoadingMoreState.next(true);
-    const nextPage = this.currentPage + 1;
-    this.http.get<MarketplacePage>(`/api/bff/marketplace/facturas?page=${nextPage}`).subscribe({
+    const params = this._lastCursor
+      ? `scope=preferidos&cursor=${this._lastCursor}&limit=20`
+      : 'scope=preferidos&limit=20';
+    this.http.get<MarketplacePage>(`/api/bff/marketplace/facturas?${params}`).subscribe({
       next: res => {
-        this.currentPage = res.page;
-        this.hasMoreState.next(res.page < res.totalPages);
+        this._lastCursor = res.nextCursor;
+        this.hasMoreState.next(!!res.nextCursor);
         this.facturasState.next([...this.facturasState.value, ...(res.data ?? [])]);
         this.isLoadingMoreState.next(false);
+      },
+      error: () => {
+        this.isLoadingMoreState.next(false);
+      }
+    });
+  }
+
+  /**
+   * Carga bajo demanda del mercado general (clientes no preferidos).
+   * Solo se llama cuando el usuario hace clic en "Ver más oportunidades".
+   * Usa paginación por cursor para no saturar la BD.
+   */
+  loadMercadoGeneral(cursor: string | null = null): void {
+    const params = cursor
+      ? `scope=todos&cursor=${cursor}&limit=20`
+      : 'scope=todos&limit=20';
+    this.isLoadingMoreState.next(true);
+    this.http.get<MarketplacePage>(`/api/bff/marketplace/facturas?${params}`).subscribe({
+      next: res => {
+        this._lastCursor = res.nextCursor;
+        this.hasMoreState.next(!!res.nextCursor);
+        this.facturasState.next([...this.facturasState.value, ...(res.data ?? [])]);
+        this.isLoadingMoreState.next(false);
+        // Limpia del badge las facturas que ya se cargaron
+        this.nuevasExternasState.next(
+          this.nuevasExternasState.value.filter(
+            n => !(res.data ?? []).some(f => f.facturaId === n.facturaId)
+          )
+        );
       },
       error: () => {
         this.isLoadingMoreState.next(false);
