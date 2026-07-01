@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FacturasMarketplaceService, FacturaMarketplace } from './facturas-marketplace.service';
+import { CardComponent } from 'shared-utils';
 
 export type { FacturaMarketplace };
 
@@ -19,17 +20,18 @@ export type { FacturaMarketplace };
   styleUrls: ['./facturas-marketplace.component.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule]
+  imports: [CommonModule, FormsModule, CardComponent]
 })
 export class FacturasMarketplaceComponent implements OnInit, AfterViewInit, OnDestroy {
+
   @Input() facturaSeleccionadaId: string | null = null;
   @Output() readonly seleccionarFactura = new EventEmitter<FacturaMarketplace>();
 
   @ViewChild('listaScroll') private readonly listaScroll?: ElementRef<HTMLElement>;
   @ViewChild('scrollSentinel') private readonly scrollSentinel?: ElementRef<HTMLElement>;
 
-  private readonly service = inject(FacturasMarketplaceService);
-  private readonly cdRef = inject(ChangeDetectorRef);
+  // private readonly service = inject(FacturasMarketplaceService);
+  // private readonly cdRef = inject(ChangeDetectorRef);
   private readonly destroy$ = new Subject<void>();
   private intersectionObserver?: IntersectionObserver;
 
@@ -44,6 +46,11 @@ export class FacturasMarketplaceComponent implements OnInit, AfterViewInit, OnDe
   filtroAltaLiquidez = false;
 
   readonly skeletonItems = [1, 2, 3, 4];
+
+  constructor(
+    private readonly service: FacturasMarketplaceService,
+    private readonly cdRef: ChangeDetectorRef
+  ) { }
 
   get emptyStatePreferidos(): boolean {
     return (
@@ -69,6 +76,8 @@ export class FacturasMarketplaceComponent implements OnInit, AfterViewInit, OnDe
       this.aplicarFiltros();
       this.cdRef.markForCheck();
     });
+
+
   }
 
   ngAfterViewInit(): void {

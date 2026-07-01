@@ -28,13 +28,20 @@
   <main class="col-detalle" aria-label="Detalle de factura">
 
     <!-- Overlay: factura retirada (CA-05) -->
-    <div class="overlay-retirada" *ngIf="!facturaDisponible">
-      <div class="overlay-retirada__box">
-        <p>Esta factura ya no está disponible.</p>
-        <button type="button" class="btn-limpiar-seleccion" (click)="facturaSeleccionada = null; facturaDisponible = true">
-          Seleccionar otra factura
-        </button>
-      </div>
+    <div class="overlay-retirada" *ngIf="!facturaDisponible" role="alertdialog" aria-modal="true" aria-label="Factura no disponible">
+      <app-card [elevated]="true" glowColor="var(--color-error)" radius="12px" width="360px">
+        <div card-title>
+          <span class="overlay-retirada__icon" aria-hidden="true">⚠</span>
+          <span class="text-h3">Factura no disponible</span>
+        </div>
+        <div card-content class="overlay-retirada__body">
+          <p class="text-body">Esta factura ya no está disponible en el marketplace.</p>
+          <button type="button" class="btn-limpiar-seleccion"
+            (click)="facturaSeleccionada = null; facturaDisponible = true">
+            Seleccionar otra factura
+          </button>
+        </div>
+      </app-card>
     </div>
 
     <div class="detalle-inner" [class.bloqueado]="!facturaDisponible">
