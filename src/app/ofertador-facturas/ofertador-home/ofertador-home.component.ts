@@ -125,7 +125,7 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
       .pipe(
         filter((orgUuid): orgUuid is string => !!orgUuid),
         tap(() => {
-          this.facturasService.loadPreferidos();
+          this.facturasService.loadPreferidos(this.apiBase);
           this.nuevasExternas = [];
           this.facturaSeleccionada = null;
         }),

@@ -27,6 +27,12 @@ interface MarketplacePage {
   minDiasAltaLiquidez: number;
 }
 
+interface BffApiResponse<T> {
+  status: number;
+  message: string;
+  data: T;
+}
+
 export interface FacturaNuevaExterna {
   facturaId: string;
   razonSocial: string;
@@ -175,22 +181,23 @@ export class FacturasMarketplaceService implements OnDestroy, OnInit {
   }
 
   /** Carga inicial: solo facturas de clientes preferidos (histórico de operaciones). Respuesta pequeña y rápida. */
-  loadPreferidos(): void {
+  loadPreferidos(apiBase: string): void {
     this._lastCursor = null;
     this.hasMoreState.next(true);
     this.facturasState.next([]);
     this.nuevasExternasState.next([]);
     this.isLoadingState.next(true);
     this.http
-      .get<MarketplacePage>(
-        '/api/bff/factura/marketplace?scope=preferidos&limit=20',
+      .get<BffApiResponse<MarketplacePage>>(
+        `${apiBase}/api/bff/factura/marketplace?scope=preferidos&limit=20`,
       )
       .subscribe({
         next: (res) => {
-          this.minDiasAltaLiquidez = res.minDiasAltaLiquidez ?? 30;
-          this._lastCursor = res.nextCursor;
-          this.hasMoreState.next(!!res.nextCursor);
-          this.facturasState.next(res.data ?? []);
+          const page = res.data;
+          this.minDiasAltaLiquidez = page.minDiasAltaLiquidez ?? 30;
+          this._lastCursor = page.nextCursor;
+          this.hasMoreState.next(!!page.nextCursor);
+          this.facturasState.next(page.data ?? []);
           this.isLoadingState.next(false);
         },
         error: () => {
@@ -209,14 +216,15 @@ export class FacturasMarketplaceService implements OnDestroy, OnInit {
       ? `scope=preferidos&cursor=${this._lastCursor}&limit=20`
       : 'scope=preferidos&limit=20';
     this.http
-      .get<MarketplacePage>(`/api/bff/factura/marketplace?${params}`)
+      .get<BffApiResponse<MarketplacePage>>(`/api/bff/factura/marketplace?${params}`)
       .subscribe({
         next: (res) => {
-          this._lastCursor = res.nextCursor;
-          this.hasMoreState.next(!!res.nextCursor);
+          const page = res.data;
+          this._lastCursor = page.nextCursor;
+          this.hasMoreState.next(!!page.nextCursor);
           this.facturasState.next([
             ...this.facturasState.value,
-            ...(res.data ?? []),
+            ...(page.data ?? []),
           ]);
           this.isLoadingMoreState.next(false);
         },
@@ -237,20 +245,21 @@ export class FacturasMarketplaceService implements OnDestroy, OnInit {
       : 'scope=todos&limit=20';
     this.isLoadingMoreState.next(true);
     this.http
-      .get<MarketplacePage>(`/api/bff/marketplace/facturas?${params}`)
+      .get<BffApiResponse<MarketplacePage>>(`/api/bff/factura/marketplace?${params}`)
       .subscribe({
         next: (res) => {
-          this._lastCursor = res.nextCursor;
-          this.hasMoreState.next(!!res.nextCursor);
+          const page = res.data;
+          this._lastCursor = page.nextCursor;
+          this.hasMoreState.next(!!page.nextCursor);
           this.facturasState.next([
             ...this.facturasState.value,
-            ...(res.data ?? []),
+            ...(page.data ?? []),
           ]);
           this.isLoadingMoreState.next(false);
           // Limpia del badge las facturas que ya se cargaron
           this.nuevasExternasState.next(
             this.nuevasExternasState.value.filter(
-              (n) => !(res.data ?? []).some((f) => f.facturaId === n.facturaId),
+              (n) => !(page.data ?? []).some((f) => f.facturaId === n.facturaId),
             ),
           );
         },
