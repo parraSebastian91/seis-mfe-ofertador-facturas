@@ -1,7 +1,49 @@
+<div
+  class="drawer-overlay"
+  [class.abierto]="abierto"
+  (click)="cerrarOfertador()"
+>
+  <!-- ── Panel visor documental — hermano del aside, ocupa el espacio restante izquierdo -->
+  <div
+    class="visor-panel"
+    [class.abierto]="visorAbierto"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="visor-panel-header">
+      <div class="visor-panel-title">
+        <span class="visor-panel-icon">📄</span>
+        <span>Documento Tributario</span>
+      </div>
+      <button
+        class="btn-cerrar-visor"
+        (click)="toggleVisor()"
+        title="Cerrar visor"
+      >
+        ×
+      </button>
+    </div>
 
-<div class="drawer-overlay" [class.abierto]="abierto" (click)="cerrarOfertador()">
+    <div class="visor-panel-body">
+      <app-visor-documental
+        [url]="urlDocumento"
+        [loading]="!urlDocumento && visorAbierto"
+        [error]="false"
+      ></app-visor-documental>
+    </div>
+  </div>
 
+  <!-- ── Drawer principal ──────────────────────────────────────────────── -->
   <div class="drawer-container" (click)="$event.stopPropagation()">
+    <!-- Pestaña flotante que sale del borde izquierdo del drawer -->
+    <button
+      class="tab-visor"
+      [class.activa]="visorAbierto"
+      (click)="toggleVisor()"
+      title="{{ visorAbierto ? 'Cerrar visor' : 'Ver documento' }}"
+    >
+      <span class="tab-icono">📄</span>
+      <span class="tab-label">DOC</span>
+    </button>
 
     <div class="drawer-header">
       <div class="header-info">
@@ -12,63 +54,144 @@
       <button class="btn-cerrar-drawer" (click)="cerrarOfertador()">×</button>
     </div>
 
+    <!-- ── Stepper de navegación ─────────────────────────────────────── -->
+    <nav class="stepper" aria-label="Pasos de la oferta">
+      @for (paso of pasos; track paso.numero) {
+        <button
+          type="button"
+          class="step-item"
+          [class.step-item--active]="stepActual === paso.numero"
+          [class.step-item--done]="stepActual > paso.numero"
+          (click)="irAPaso(paso.numero)"
+          [attr.aria-current]="stepActual === paso.numero ? 'step' : null"
+        >
+          <span class="step-bullet">
+            @if (stepActual > paso.numero) {
+              ✓
+            } @else {
+              {{ paso.numero }}
+            }
+          </span>
+          <span class="step-label">{{ paso.label }}</span>
+        </button>
+        @if (paso.numero < pasos.length) {
+          <span class="step-connector" [class.step-connector--done]="stepActual > paso.numero"></span>
+        }
+      }
+    </nav>
+
+    <!-- ── Contenido por paso ────────────────────────────────────────── -->
     <div class="drawer-content">
 
-      <div class="seccion-bloque">
-        <h5>📄 Documento Tributario (SII)</h5>
-        <div class="contenedor-visor">
-          <div class="pdf-placeholder">
-            <p class="m-0"><strong>{{ factura?.deudorName }}</strong></p>
-            <p class="text-muted small">RUT: {{ factura?.deudorRut }}</p>
-            <hr class="linea-visor">
-            <div class="fila-visor"><span>Monto Neto:</span> <span>${{ factura?.montoNeto | number:'1.0-0' }}</span></div>
-            <div class="fila-visor"><span>IVA (19%):</span> <span>${{ ((factura?.montoTotal ?? 0) - (factura?.montoNeto ?? 0)) | number:'1.0-0' }}</span></div>
-            <div class="fila-visor total"><span>Monto Total:</span> <span>${{ factura?.montoTotal | number:'1.0-0' }}</span></div>
-          </div>
-        </div>
-      </div>
+      <!-- PASO 1 — Datos de la factura + Adjuntos -->
+      @if (stepActual === 1) {
+        <div class="step-content animated-step">
 
-      <div class="seccion-bloque">
-        <h5>🧮 Simulación de Giro Líquido</h5>
-        <div class="contenedor-calculadora">
+          <section class="datos-factura">
+            <h5 class="seccion-titulo">📋 Datos de Factura</h5>
+            <dl class="datos-grid">
+              <div class="dato-row">
+                <dt>Folio</dt>
+                <dd>{{ factura?.folio || '—' }}</dd>
+              </div>
+              <div class="dato-row">
+                <dt>Deudor</dt>
+                <dd>{{ factura?.deudorName || '—' }}</dd>
+              </div>
+              <div class="dato-row">
+                <dt>RUT Deudor</dt>
+                <dd>{{ factura?.deudorRut || '—' }}</dd>
+              </div>
+              <div class="dato-row">
+                <dt>Monto Total</dt>
+                <dd>${{ (factura?.montoTotal ?? 0) | number:'1.0-0' }}</dd>
+              </div>
+              <div class="dato-row">
+                <dt>Monto Neto</dt>
+                <dd>${{ (factura?.montoNeto ?? 0) | number:'1.0-0' }}</dd>
+              </div>
+              <div class="dato-row">
+                <dt>Vencimiento</dt>
+                <dd>{{ factura?.diasAlVencimiento ?? 0 }} días</dd>
+              </div>
+              <div class="dato-row">
+                <dt>Emisor</dt>
+                <dd>{{ factura?.razonSocial || '—' }}</dd>
+              </div>
+            </dl>
+          </section>
 
-          <div class="input-group-ff">
-            <label>Tasa de Interés Mensual (%)</label>
-            <input
-              type="number"
-              step="0.01"
-              [(ngModel)]="tasaSimulada"
-              (input)="recalcularOperacion()"
-              placeholder="Ej: 1.85">
-          </div>
-
-          <div class="tabla-calculos">
-            <div class="linea-calculo">
-              <span>Días al Vencimiento:</span>
-              <strong>{{ factura?.diasAlVencimiento ?? 0 }} días</strong>
-            </div>
-            <div class="linea-calculo">
-              <span>Descuento por Interés:</span>
-              <span class="descuento">-${{ descuentoInteres | number:'1.0-0' }}</span>
-            </div>
-            <div class="linea-calculo">
-              <span>Comisión Plataforma (Mesa):</span>
-              <span class="descuento">-${{ comisionFija | number:'1.0-0' }}</span>
-            </div>
-            <hr class="divisor-calculo">
-            <div class="linea-calculo resultado-final">
-              <span>Giro Líquido a PYME:</span>
-              <strong class="texto-verde">${{ giroLiquidoCalculado | number:'1.0-0' }}</strong>
-            </div>
-          </div>
-
-          <button class="btn-lanzar-oferta" (click)="enviarOfertaComercial()">
-            🚀 Lanzar Oferta a la PYME
-          </button>
+          <section class="adjuntos-seccion">
+            <h5 class="seccion-titulo">📎 Documentos adjuntos</h5>
+            <lib-adjuntos-list
+              [adjuntos]="adjuntos"
+              [selectedId]="selectedAdjuntoId"
+              [loadingId]="loadingAdjuntoId"
+              [canUpload]="false"
+              (adjuntoSelected)="onAdjuntoSeleccionado($event)"
+            ></lib-adjuntos-list>
+          </section>
 
         </div>
-      </div>
+      }
+
+      <!-- PASO 2 — Calculadora de liquidación -->
+      @if (stepActual === 2) {
+        <div class="step-content animated-step">
+          <app-calculadora-liquidacion
+            [montoFactura]="facturaSeleccionada?.monto || 0"
+            [plazoDias]="plazoDias"
+            [facturaId]="facturaSeleccionada?.facturaId || null"
+            [mejorTasaMercado]="mejorTasaMercado"
+            [hayOfertasCompetidoras]="hayOfertasCompetidoras"
+            [mostrarOverlayCambios]="mostrarOverlayCambios"
+            [cambioActual]="cambioActual"
+            (liquidacionChange)="liquidacion = $event; montoAnticipar = $event?.montoAnticipado ?? 0"
+          ></app-calculadora-liquidacion>
+        </div>
+      }
+
+      <!-- PASO 3 — Pre-liquidación y envío -->
+      @if (stepActual === 3) {
+        <div class="step-content animated-step">
+          <app-pre-liquidacion
+            [liquidacion]="liquidacion"
+            [permitirEnvio]="
+              facturaSeleccionada !== null &&
+              !mostrarOverlayCambios &&
+              facturaDisponible &&
+              !cupoExcedido
+            "
+            (enviarOferta)="onEnviarOferta($event)"
+          ></app-pre-liquidacion>
+        </div>
+      }
 
     </div>
+
+    <!-- ── Navegación inferior ───────────────────────────────────────── -->
+    <footer class="step-nav">
+      <button
+        type="button"
+        class="step-nav-btn step-nav-btn--secondary"
+        [disabled]="stepActual === 1"
+        (click)="anterior()"
+      >← Anterior</button>
+
+      @if (stepActual < pasos.length) {
+        <button type="button" class="step-nav-btn step-nav-btn--primary" (click)="siguiente()">
+          Siguiente →
+        </button>
+      } @else {
+        <button
+          type="button"
+          class="step-nav-btn step-nav-btn--cta"
+          [disabled]="!liquidacion || mostrarOverlayCambios || !facturaDisponible || cupoExcedido"
+          (click)="onEnviarOferta({ montoTransferencia: liquidacion!.montoAnticipado, excedenteRetenido: liquidacion!.excedenteRetenido, ganancia: liquidacion!.margenBruto, plazo: liquidacion!.plazoDias })"
+        >
+          🚀 Enviar oferta
+        </button>
+      }
+    </footer>
   </div>
 </div>

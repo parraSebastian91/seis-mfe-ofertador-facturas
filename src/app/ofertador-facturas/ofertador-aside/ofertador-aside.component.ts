@@ -1,8 +1,27 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { VisorDocumentalComponent } from '../visor-documental/visor-documental.component';
+import { AdjuntoItem, AdjuntosListComponent } from 'shared-utils';
+import {
+  CalculadoraLiquidacionComponent,
+  LiquidacionCalculada,
+} from '../calculadora-liquidacion/calculadora-liquidacion.component';
+import {
+  PreLiquidacionComponent,
+  SolicitudEnvioOferta,
+} from '../pre-liquidacion/pre-liquidacion.component';
+import { CambioFactura } from '../servicios/cambios-factura.service';
 
 export interface FacturaSeleccionada {
+  facturaId: string;
   folio: string;
   razonSocial: string;
   status: string;
@@ -10,6 +29,8 @@ export interface FacturaSeleccionada {
   deudorRut: string;
   montoNeto: number;
   montoTotal: number;
+  /** Alias de montoTotal — requerido por CalculadoraLiquidacionComponent */
+  monto: number;
   diasAlVencimiento: number;
 }
 
@@ -22,7 +43,7 @@ export interface LeadsMarketplace {
 @Component({
   selector: 'app-ofertador-aside',
   standalone: true,
-  imports: [FormsModule, DecimalPipe],
+  imports: [FormsModule, DecimalPipe, VisorDocumentalComponent, AdjuntosListComponent, CalculadoraLiquidacionComponent, PreLiquidacionComponent],
   templateUrl: './ofertador-aside.component.html',
   styleUrl: './ofertador-aside.component.scss',
 })
@@ -30,37 +51,82 @@ export class OfertadorAsideComponent implements OnChanges {
   @Input() factura: FacturaSeleccionada | null = null;
   @Input() cliente: LeadsMarketplace | null = null;
   @Input() abierto: boolean = false;
+  @Input() urlDocumento: string | null = null;
+  @Input() adjuntos: AdjuntoItem[] = [];
+  @Input() mejorTasaMercado: number | null = null;
+  @Input() hayOfertasCompetidoras = false;
+  @Input() mostrarOverlayCambios = false;
+  @Input() cambioActual: CambioFactura | null = null;
   @Output() cerrar = new EventEmitter<void>();
+  @Output() ofertaEnviada = new EventEmitter<SolicitudEnvioOferta>();
 
-  tasaSimulada: number = 0;
-  descuentoInteres: number = 0;
-  comisionFija: number = 0;
-  giroLiquidoCalculado: number = 0;
+  visorAbierto = false;
+
+  // ── Stepper (3 pasos) ────────────────────────────────────────────────────
+  readonly pasos = [
+    { numero: 1, label: 'Factura',      icono: '📋' },
+    { numero: 2, label: 'Calculadora',  icono: '🧮' },
+    { numero: 3, label: 'Liquidación',  icono: '🚀' },
+  ] as const;
+  stepActual = 1;
+
+  // Estado interno de la liquidación
+  liquidacion: LiquidacionCalculada | null = null;
+  montoAnticipar = 0;
+  facturaDisponible = true;
+  cupoExcedido = false;
+
+  /** Adjunto actualmente seleccionado para el visor */
+  selectedAdjuntoId: string | null = null;
+  loadingAdjuntoId: string | null = null;
+
+  /** Alias de acceso para bindings del template (↔ calculadora) */
+  get facturaSeleccionada(): FacturaSeleccionada | null {
+    return this.factura;
+  }
+
+  get plazoDias(): number {
+    return this.factura?.diasAlVencimiento ?? 0;
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['factura'] && this.factura) {
-      this.tasaSimulada = 0;
-      this.recalcularOperacion();
+      this.visorAbierto = false;
+      this.liquidacion = null;
+      this.montoAnticipar = 0;
+      this.facturaDisponible = true;
+      this.cupoExcedido = false;
+      this.stepActual = 1;
+      this.selectedAdjuntoId = null;
     }
+    if (changes['abierto'] && !this.abierto) {
+      this.visorAbierto = false;
+      this.stepActual = 1;
+    }
+  }
+
+  irAPaso(paso: number): void {
+    this.stepActual = Math.max(1, Math.min(paso, this.pasos.length));
+  }
+
+  siguiente(): void { this.irAPaso(this.stepActual + 1); }
+  anterior(): void  { this.irAPaso(this.stepActual - 1); }
+
+  onAdjuntoSeleccionado(adj: AdjuntoItem): void {
+    this.selectedAdjuntoId = adj.id;
+    this.urlDocumento = adj.url;
+    this.visorAbierto = true;
+  }
+
+  toggleVisor(): void {
+    this.visorAbierto = !this.visorAbierto;
   }
 
   cerrarOfertador(): void {
     this.cerrar.emit();
   }
 
-  recalcularOperacion(): void {
-    if (!this.factura) return;
-    const tasaMensual = this.tasaSimulada / 100;
-    const meses = this.factura.diasAlVencimiento / 30;
-    this.descuentoInteres = Math.round(this.factura.montoTotal * tasaMensual * meses);
-    this.comisionFija = Math.round(this.factura.montoTotal * 0.005);
-    this.giroLiquidoCalculado = Math.max(
-      0,
-      this.factura.montoTotal - this.descuentoInteres - this.comisionFija,
-    );
-  }
-
-  enviarOfertaComercial(): void {
-    console.log('Enviando oferta comercial:', this.factura, this.cliente);
+  onEnviarOferta(solicitud: SolicitudEnvioOferta): void {
+    this.ofertaEnviada.emit(solicitud);
   }
 }

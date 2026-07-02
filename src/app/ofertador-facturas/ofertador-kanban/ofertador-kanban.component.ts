@@ -127,6 +127,7 @@ export class OfertadorKanbanComponent {
       'vencimiento' in factura ? this.calcularDiasVencimiento(factura.vencimiento) : 30;
 
     this.facturaParaAside = {
+      facturaId: factura.id.toString(),
       folio: factura.folio,
       razonSocial: this.clienteSeleccionado?.razonSocial ?? '',
       status: 'tasaAplicada' in factura ? 'NEGOCIABLE' : 'PUBLICADA',
@@ -134,6 +135,7 @@ export class OfertadorKanbanComponent {
       deudorRut: '',
       montoNeto,
       montoTotal,
+      monto: montoTotal,
       diasAlVencimiento,
     };
     this.asideAbierto = true;

@@ -67,38 +67,40 @@
       </div>
     </div>
 
-    <!-- CA-04: Gastos y comisiones -->
-    <div class="campo">
-      <label for="inp-comision">Comisión de Estructuración ($)</label>
-      <input id="inp-comision" type="number" min="0"
-        [value]="comision()"
-        (input)="onGastoChange('comision', $any($event.target).value)"
-        (blur)="onGastoChange('comision', $any($event.target).value)"
-        [disabled]="mostrarOverlayCambios">
-    </div>
-    <div class="campo">
-      <label for="inp-gastos">Gastos Operacionales ($)</label>
-      <input id="inp-gastos" type="number" min="0"
-        [value]="gastosOp()"
-        (input)="onGastoChange('gastosOp', $any($event.target).value)"
-        (blur)="onGastoChange('gastosOp', $any($event.target).value)"
-        [disabled]="mostrarOverlayCambios">
-    </div>
-    <div class="campo">
-      <label for="inp-contrato">Gasto de Contrato ($)</label>
-      <input id="inp-contrato" type="number" min="0"
-        [value]="gContrato()"
-        (input)="onGastoChange('gContrato', $any($event.target).value)"
-        (blur)="onGastoChange('gContrato', $any($event.target).value)"
-        [disabled]="mostrarOverlayCambios">
-    </div>
-    <div class="campo">
-      <label for="inp-apertura">Gasto de Apertura ($)</label>
-      <input id="inp-apertura" type="number" min="0"
-        [value]="gApertura()"
-        (input)="onGastoChange('gApertura', $any($event.target).value)"
-        (blur)="onGastoChange('gApertura', $any($event.target).value)"
-        [disabled]="mostrarOverlayCambios">
+    <!-- CA-04: Gastos y comisiones — grid 2×2 compacto -->
+    <div class="gastos-grid">
+      <div class="campo">
+        <label for="inp-comision">Comisión Estructuración ($)</label>
+        <input id="inp-comision" type="number" min="0"
+          [value]="comision()"
+          (input)="onGastoChange('comision', $any($event.target).value)"
+          (blur)="onGastoChange('comision', $any($event.target).value)"
+          [disabled]="mostrarOverlayCambios">
+      </div>
+      <div class="campo">
+        <label for="inp-gastos">Gastos Operacionales ($)</label>
+        <input id="inp-gastos" type="number" min="0"
+          [value]="gastosOp()"
+          (input)="onGastoChange('gastosOp', $any($event.target).value)"
+          (blur)="onGastoChange('gastosOp', $any($event.target).value)"
+          [disabled]="mostrarOverlayCambios">
+      </div>
+      <div class="campo">
+        <label for="inp-contrato">Gasto de Contrato ($)</label>
+        <input id="inp-contrato" type="number" min="0"
+          [value]="gContrato()"
+          (input)="onGastoChange('gContrato', $any($event.target).value)"
+          (blur)="onGastoChange('gContrato', $any($event.target).value)"
+          [disabled]="mostrarOverlayCambios">
+      </div>
+      <div class="campo">
+        <label for="inp-apertura">Gasto de Apertura ($)</label>
+        <input id="inp-apertura" type="number" min="0"
+          [value]="gApertura()"
+          (input)="onGastoChange('gApertura', $any($event.target).value)"
+          (blur)="onGastoChange('gApertura', $any($event.target).value)"
+          [disabled]="mostrarOverlayCambios">
+      </div>
     </div>
 
   </form>

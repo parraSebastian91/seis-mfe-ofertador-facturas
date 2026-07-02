@@ -17,6 +17,8 @@
 .drawer-overlay.abierto {
   opacity: 1;
   pointer-events: auto;
+  width: calc(100vw - 56px);
+  left: 56px;
 }
 
 /* El panel sólido que se desliza desde la derecha */
@@ -47,14 +49,37 @@
   border-bottom: 1px solid #1c2541;
 }
 
-.header-info h4 { margin: 0 0 4px 0; color: #ffffff; font-size: 18px; font-weight: 600; }
-.emisor-label { margin: 0; color: #5c677d; font-size: 12px; }
-.badge-estado { font-size: 9px; background-color: #48cae4; color: #060b19; padding: 2px 6px; border-radius: 4px; font-weight: 700; text-transform: uppercase; }
+.header-info h4 {
+  margin: 0 0 4px 0;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 600;
+}
+.emisor-label {
+  margin: 0;
+  color: #5c677d;
+  font-size: 12px;
+}
+.badge-estado {
+  font-size: 9px;
+  background-color: #48cae4;
+  color: #060b19;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
 
 .btn-cerrar-drawer {
-  background: transparent; border: none; color: #5c677d; font-size: 24px; cursor: pointer;
+  background: transparent;
+  border: none;
+  color: #5c677d;
+  font-size: 24px;
+  cursor: pointer;
 }
-.btn-cerrar-drawer:hover { color: #ffffff; }
+.btn-cerrar-drawer:hover {
+  color: #ffffff;
+}
 
 /* CONTENIDO CON SCROLL INTERNO */
 .drawer-content {
@@ -67,41 +92,472 @@
 }
 
 .seccion-bloque h5 {
-  margin: 0 0 10px 0; color: #ffffff; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+  margin: 0 0 10px 0;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 /* VISUALIZADOR DE FACTURA */
 .contenedor-visor {
-  background-color: #060b19; border: 1px solid #1c2541; border-radius: 6px; padding: 16px;
+  background-color: #060b19;
+  border: 1px solid #1c2541;
+  border-radius: 6px;
+  padding: 16px;
 }
-.pdf-placeholder { color: #ffffff; font-size: 13px; }
-.linea-visor { border: 0; border-top: 1px solid #1c2541; margin: 12px 0; }
-.fila-visor { display: flex; justify-content: space-between; margin-bottom: 6px; color: #a5a5a5; }
-.fila-visor.total { color: #ffffff; font-weight: 700; font-size: 14px; margin-top: 10px; }
+.pdf-placeholder {
+  color: #ffffff;
+  font-size: 13px;
+}
+.linea-visor {
+  border: 0;
+  border-top: 1px solid #1c2541;
+  margin: 12px 0;
+}
+.fila-visor {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  color: #a5a5a5;
+}
+.fila-visor.total {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+  margin-top: 10px;
+}
 
 /* CALCULADORA */
 .contenedor-calculadora {
-  background-color: #1c2541; border-radius: 6px; padding: 16px; display: flex; flex-direction: column; gap: 16px;
+  background-color: #1c2541;
+  border-radius: 6px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.input-group-ff { display: flex; flex-direction: column; gap: 6px; }
-.input-group-ff label { color: #48cae4; font-size: 11px; font-weight: 600; }
+.input-group-ff {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.input-group-ff label {
+  color: #48cae4;
+  font-size: 11px;
+  font-weight: 600;
+}
 .input-group-ff input {
-  background-color: #060b19; border: 1px solid #3a506b; border-radius: 4px; padding: 10px; color: #ffffff; font-size: 14px; font-weight: 600; outline: none;
+  background-color: #060b19;
+  border: 1px solid #3a506b;
+  border-radius: 4px;
+  padding: 10px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  outline: none;
 }
-.input-group-ff input:focus { border-color: #00e5a3; }
+.input-group-ff input:focus {
+  border-color: #00e5a3;
+}
 
-.tabla-calculos { display: flex; flex-direction: column; gap: 8px; font-size: 12px; }
-.linea-calculo { display: flex; justify-content: space-between; color: #a5a5a5; }
-.linea-calculo strong { color: #ffffff; }
-.descuento { color: #ff4d4d; font-weight: 600; }
-.divisor-calculo { border: 0; border-top: 1px dashed #3a506b; margin: 6px 0; }
+.tabla-calculos {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+}
+.linea-calculo {
+  display: flex;
+  justify-content: space-between;
+  color: #a5a5a5;
+}
+.linea-calculo strong {
+  color: #ffffff;
+}
+.descuento {
+  color: #ff4d4d;
+  font-weight: 600;
+}
+.divisor-calculo {
+  border: 0;
+  border-top: 1px dashed #3a506b;
+  margin: 6px 0;
+}
 
-.resultado-final { font-size: 14px; align-items: center; }
-.texto-verde { color: #00e5a3 !important; font-size: 18px; font-weight: 700; }
+.resultado-final {
+  font-size: 14px;
+  align-items: center;
+}
+.texto-verde {
+  color: #00e5a3 !important;
+  font-size: 18px;
+  font-weight: 700;
+}
 
 /* BOTÓN LANZAR OFERTA */
 .btn-lanzar-oferta {
-  background-color: #00e5a3; color: #060b19; border: none; border-radius: 4px; padding: 12px; font-size: 13px; font-weight: 700; cursor: pointer; transition: background-color 0.2s;
+  background-color: #00e5a3;
+  color: #060b19;
+  border: none;
+  border-radius: 4px;
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
-.btn-lanzar-oferta:hover { background-color: #00c28a; }
+.btn-lanzar-oferta:hover {
+  background-color: #00c28a;
+}
+
+// =============================================================================
+// STEPPER DE NAVEGACIÓN
+// =============================================================================
+
+.stepper {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  border-bottom: 1px solid #1c2541;
+  gap: 0;
+  background: #070e23;
+  flex-shrink: 0;
+}
+
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.15s;
+  flex-shrink: 0;
+
+  &:hover { background: rgba(255,255,255,0.04); }
+
+  &--active {
+    .step-bullet {
+      background: #00bfa5;
+      color: #060b19;
+      border-color: #00bfa5;
+    }
+    .step-label { color: #00bfa5; font-weight: 700; }
+  }
+
+  &--done {
+    .step-bullet {
+      background: rgba(0,191,165,0.15);
+      color: #00bfa5;
+      border-color: rgba(0,191,165,0.3);
+    }
+    .step-label { color: #5c677d; }
+  }
+}
+
+.step-bullet {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1.5px solid #3a506b;
+  background: transparent;
+  color: #5c677d;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.step-label {
+  font-size: 9px;
+  font-weight: 600;
+  color: #5c677d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: color 0.2s;
+}
+
+.step-connector {
+  flex: 1;
+  height: 1px;
+  background: #1c2541;
+  margin: 0 4px;
+  margin-bottom: 14px; // alinear con el centro del bullet
+  transition: background 0.2s;
+
+  &--done { background: rgba(0,191,165,0.4); }
+}
+
+// =============================================================================
+// CONTENIDO DE PASOS
+// =============================================================================
+
+.step-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animated-step {
+  animation: fadeSlideIn 0.22s ease both;
+}
+
+// ── Sección de datos de factura ───────────────────────────────────────────────
+.seccion-titulo {
+  margin: 0 0 10px 0;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.datos-factura { display: flex; flex-direction: column; }
+
+.datos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 12px;
+  margin: 0;
+  padding: 12px;
+  background: #070e23;
+  border: 1px solid #1c2541;
+  border-radius: 8px;
+}
+
+.dato-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  dt {
+    font-size: 9px;
+    font-weight: 700;
+    color: #5c677d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  dd {
+    margin: 0;
+    font-size: 12px;
+    color: #e2e8f0;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.adjuntos-seccion { display: flex; flex-direction: column; }
+
+// =============================================================================
+// NAVEGACIÓN INFERIOR DEL STEPPER
+// =============================================================================
+
+.step-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-top: 1px solid #1c2541;
+  background: #070e23;
+  flex-shrink: 0;
+}
+
+.step-nav-btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  &--secondary {
+    background: transparent;
+    color: #5c677d;
+    border: 1px solid #1c2541;
+    &:hover:not(:disabled) { background: rgba(255,255,255,0.04); color: #fff; }
+  }
+
+  &--primary {
+    background: #1c2541;
+    color: #00bfa5;
+    border: 1px solid rgba(0,191,165,0.3);
+    &:hover:not(:disabled) { background: rgba(0,191,165,0.12); }
+  }
+
+  &--cta {
+    background: #00bfa5;
+    color: #060b19;
+    &:hover:not(:disabled) { background: #00a896; }
+  }
+}
+
+// =============================================================================
+// PESTAÑA DE ACCESO AL VISOR (sale del borde izquierdo del drawer)
+// =============================================================================
+
+.tab-visor {
+  position: absolute;
+  left: -46px;
+  top: 140px;
+  transform: translateY(-50%);
+  width: 46px;
+  height: 84px;
+  background-color: #0b132b;
+  border: 1px solid #1c2541;
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+  z-index: 10;
+
+  &:hover {
+    background-color: #1c2541;
+    border-color: #3a506b;
+  }
+
+  &.activa {
+    background-color: #00bfa5;
+    border-color: #00bfa5;
+
+    .tab-label {
+      color: #060b19;
+    }
+  }
+}
+
+.tab-icono {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.tab-label {
+  font-size: 8px;
+  font-weight: 800;
+  color: #5c677d;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transition: color 0.2s ease;
+}
+
+// =============================================================================
+// PANEL VISOR DOCUMENTAL (hermano del drawer, ocupa espacio restante izquierdo)
+// =============================================================================
+
+.visor-panel {
+  position: absolute;
+  top: 0;
+  right: 450px; // pegado al borde izquierdo del drawer
+  left: 0;
+  height: 100%;
+  background-color: #060b19;
+  border-right: 1px solid #1c2541;
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+
+  // Estado inicial: colapsado hacia la derecha (detrás del drawer)
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(24px);
+  transition:
+    opacity 0.28s ease,
+    transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.abierto {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+  }
+}
+
+.visor-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #1c2541;
+  flex-shrink: 0;
+  background-color: #0b132b;
+}
+
+.visor-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.visor-panel-icon {
+  font-size: 18px;
+}
+
+.btn-cerrar-visor {
+  background: transparent;
+  border: none;
+  color: #5c677d;
+  font-size: 22px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 4px;
+  transition: color 0.15s;
+
+  &:hover {
+    color: #ffffff;
+  }
+}
+
+.visor-panel-body {
+  flex-grow: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  // Fuerza que el componente visor llene todo el alto disponible
+  app-visor-documental {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    ::ng-deep .visor-bg {
+      flex: 1;
+      min-height: unset;
+      height: 100%;
+    }
+
+    ::ng-deep .visor-canvas {
+      flex: 1;
+      min-height: unset;
+      height: 100%;
+    }
+  }
+}
