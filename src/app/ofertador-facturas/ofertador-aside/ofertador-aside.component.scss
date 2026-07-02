@@ -1,0 +1,107 @@
+/* El contenedor invisible/opaco que cubre toda la pantalla */
+.drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px); /* Desenfoque sutil de fondo */
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* Cuando se le agrega la clase .abierto se activa el overlay */
+.drawer-overlay.abierto {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* El panel sólido que se desliza desde la derecha */
+.drawer-container {
+  position: absolute;
+  top: 0;
+  right: -450px; /* Nace escondido a la derecha */
+  width: 450px;
+  height: 100vh;
+  background-color: #0b132b; /* Azul Marino del ecosistema */
+  border-left: 1px solid #1c2541;
+  box-shadow: -5px 0 25px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1); /* Transición premium smooth */
+}
+
+.drawer-overlay.abierto .drawer-container {
+  right: 0; /* Entra a la pantalla */
+}
+
+/* CABECERA */
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px;
+  border-bottom: 1px solid #1c2541;
+}
+
+.header-info h4 { margin: 0 0 4px 0; color: #ffffff; font-size: 18px; font-weight: 600; }
+.emisor-label { margin: 0; color: #5c677d; font-size: 12px; }
+.badge-estado { font-size: 9px; background-color: #48cae4; color: #060b19; padding: 2px 6px; border-radius: 4px; font-weight: 700; text-transform: uppercase; }
+
+.btn-cerrar-drawer {
+  background: transparent; border: none; color: #5c677d; font-size: 24px; cursor: pointer;
+}
+.btn-cerrar-drawer:hover { color: #ffffff; }
+
+/* CONTENIDO CON SCROLL INTERNO */
+.drawer-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.seccion-bloque h5 {
+  margin: 0 0 10px 0; color: #ffffff; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+/* VISUALIZADOR DE FACTURA */
+.contenedor-visor {
+  background-color: #060b19; border: 1px solid #1c2541; border-radius: 6px; padding: 16px;
+}
+.pdf-placeholder { color: #ffffff; font-size: 13px; }
+.linea-visor { border: 0; border-top: 1px solid #1c2541; margin: 12px 0; }
+.fila-visor { display: flex; justify-content: space-between; margin-bottom: 6px; color: #a5a5a5; }
+.fila-visor.total { color: #ffffff; font-weight: 700; font-size: 14px; margin-top: 10px; }
+
+/* CALCULADORA */
+.contenedor-calculadora {
+  background-color: #1c2541; border-radius: 6px; padding: 16px; display: flex; flex-direction: column; gap: 16px;
+}
+
+.input-group-ff { display: flex; flex-direction: column; gap: 6px; }
+.input-group-ff label { color: #48cae4; font-size: 11px; font-weight: 600; }
+.input-group-ff input {
+  background-color: #060b19; border: 1px solid #3a506b; border-radius: 4px; padding: 10px; color: #ffffff; font-size: 14px; font-weight: 600; outline: none;
+}
+.input-group-ff input:focus { border-color: #00e5a3; }
+
+.tabla-calculos { display: flex; flex-direction: column; gap: 8px; font-size: 12px; }
+.linea-calculo { display: flex; justify-content: space-between; color: #a5a5a5; }
+.linea-calculo strong { color: #ffffff; }
+.descuento { color: #ff4d4d; font-weight: 600; }
+.divisor-calculo { border: 0; border-top: 1px dashed #3a506b; margin: 6px 0; }
+
+.resultado-final { font-size: 14px; align-items: center; }
+.texto-verde { color: #00e5a3 !important; font-size: 18px; font-weight: 700; }
+
+/* BOTÓN LANZAR OFERTA */
+.btn-lanzar-oferta {
+  background-color: #00e5a3; color: #060b19; border: none; border-radius: 4px; padding: 12px; font-size: 13px; font-weight: 700; cursor: pointer; transition: background-color 0.2s;
+}
+.btn-lanzar-oferta:hover { background-color: #00c28a; }

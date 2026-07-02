@@ -1,0 +1,74 @@
+
+<div class="drawer-overlay" [class.abierto]="abierto" (click)="cerrarOfertador()">
+
+  <div class="drawer-container" (click)="$event.stopPropagation()">
+
+    <div class="drawer-header">
+      <div class="header-info">
+        <span class="badge-estado">{{ factura?.status }}</span>
+        <h4>Folio #{{ factura?.folio }}</h4>
+        <p class="emisor-label">Emisor: {{ cliente?.razonSocial }}</p>
+      </div>
+      <button class="btn-cerrar-drawer" (click)="cerrarOfertador()">×</button>
+    </div>
+
+    <div class="drawer-content">
+
+      <div class="seccion-bloque">
+        <h5>📄 Documento Tributario (SII)</h5>
+        <div class="contenedor-visor">
+          <div class="pdf-placeholder">
+            <p class="m-0"><strong>{{ factura?.deudorName }}</strong></p>
+            <p class="text-muted small">RUT: {{ factura?.deudorRut }}</p>
+            <hr class="linea-visor">
+            <div class="fila-visor"><span>Monto Neto:</span> <span>${{ factura?.montoNeto | number:'1.0-0' }}</span></div>
+            <div class="fila-visor"><span>IVA (19%):</span> <span>${{ ((factura?.montoTotal ?? 0) - (factura?.montoNeto ?? 0)) | number:'1.0-0' }}</span></div>
+            <div class="fila-visor total"><span>Monto Total:</span> <span>${{ factura?.montoTotal | number:'1.0-0' }}</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="seccion-bloque">
+        <h5>🧮 Simulación de Giro Líquido</h5>
+        <div class="contenedor-calculadora">
+
+          <div class="input-group-ff">
+            <label>Tasa de Interés Mensual (%)</label>
+            <input
+              type="number"
+              step="0.01"
+              [(ngModel)]="tasaSimulada"
+              (input)="recalcularOperacion()"
+              placeholder="Ej: 1.85">
+          </div>
+
+          <div class="tabla-calculos">
+            <div class="linea-calculo">
+              <span>Días al Vencimiento:</span>
+              <strong>{{ factura?.diasAlVencimiento ?? 0 }} días</strong>
+            </div>
+            <div class="linea-calculo">
+              <span>Descuento por Interés:</span>
+              <span class="descuento">-${{ descuentoInteres | number:'1.0-0' }}</span>
+            </div>
+            <div class="linea-calculo">
+              <span>Comisión Plataforma (Mesa):</span>
+              <span class="descuento">-${{ comisionFija | number:'1.0-0' }}</span>
+            </div>
+            <hr class="divisor-calculo">
+            <div class="linea-calculo resultado-final">
+              <span>Giro Líquido a PYME:</span>
+              <strong class="texto-verde">${{ giroLiquidoCalculado | number:'1.0-0' }}</strong>
+            </div>
+          </div>
+
+          <button class="btn-lanzar-oferta" (click)="enviarOfertaComercial()">
+            🚀 Lanzar Oferta a la PYME
+          </button>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

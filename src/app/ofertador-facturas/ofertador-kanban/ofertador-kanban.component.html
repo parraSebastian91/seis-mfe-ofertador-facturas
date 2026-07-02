@@ -101,3 +101,10 @@
     </div>
   </app-card>
 </div>
+
+<app-ofertador-aside
+  [factura]="facturaParaAside"
+  [cliente]="clienteSeleccionado"
+  [abierto]="asideAbierto"
+  (cerrar)="cerrarAside()"
+></app-ofertador-aside>

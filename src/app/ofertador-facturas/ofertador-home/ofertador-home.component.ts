@@ -48,6 +48,7 @@ import {
 import { environment } from '../../../../../seis-portal/src/environments/environment.development';
 import { CarteraLeadsComponent } from '../cartera-leads/cartera-leads.component';
 import { OfertadorKanbanComponent } from '../ofertador-kanban/ofertador-kanban.component';
+import { OfertadorAsideComponent } from '../ofertador-aside/ofertador-aside.component';
 
 @Component({
   selector: 'app-ofertador-home',
@@ -69,7 +70,8 @@ import { OfertadorKanbanComponent } from '../ofertador-kanban/ofertador-kanban.c
     CardComponent,
     CardTitleDirective,
     CarteraLeadsComponent,
-    OfertadorKanbanComponent
+    OfertadorKanbanComponent,
+    OfertadorAsideComponent
   ],
 })
 export class DashboardHomeComponent implements OnInit, OnDestroy {

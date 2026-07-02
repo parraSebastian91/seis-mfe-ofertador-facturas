@@ -4,11 +4,11 @@ import {
   CardComponent,
   CardTitleDirective,
 } from '../../../../../shared-utils/src/public-api';
-export interface LeadsMarketplace {
-  razonSocial: string;
-  rut: string;
-  totalFacturas: number;
-}
+import {
+  OfertadorAsideComponent,
+  FacturaSeleccionada,
+  LeadsMarketplace,
+} from '../ofertador-aside/ofertador-aside.component';
 
 export interface FacturasPublicadas {
   id: string;
@@ -41,10 +41,15 @@ export interface FacturasNegociables {
   standalone: true,
   templateUrl: './ofertador-kanban.component.html',
   styleUrl: './ofertador-kanban.component.scss',
-  imports: [DecimalPipe, CardComponent, CardTitleDirective],
+  imports: [DecimalPipe, CardComponent, CardTitleDirective, OfertadorAsideComponent],
 })
 export class OfertadorKanbanComponent {
   clienteSeleccionado: LeadsMarketplace | null = null;
+
+  // ── Estado del aside ────────────────────────────────────────────────────────
+  asideAbierto = false;
+  facturaParaAside: FacturaSeleccionada | null = null;
+
   facturasPublicadas: FacturasPublicadas[] = [
     {
       id: '1',
@@ -100,22 +105,42 @@ export class OfertadorKanbanComponent {
     },
   ];
 
-  seleccionarCliente(cliente: LeadsMarketplace) {
+  seleccionarCliente(cliente: LeadsMarketplace): void {
     this.clienteSeleccionado = cliente;
   }
 
-  deseleccionarCliente() {
+  deseleccionarCliente(): void {
     this.clienteSeleccionado = null;
   }
 
   calcularDiasVencimiento(fechaVencimiento: string): number {
     const fechaActual = new Date();
     const fechaVencimientoDate = new Date(fechaVencimiento);
-    const diferenciaTiempo =
-      fechaVencimientoDate.getTime() - fechaActual.getTime();
-    const diferenciaDias = Math.ceil(diferenciaTiempo / (1000 * 3600 * 24));
-    return diferenciaDias;
+    const diferenciaTiempo = fechaVencimientoDate.getTime() - fechaActual.getTime();
+    return Math.ceil(diferenciaTiempo / (1000 * 3600 * 24));
   }
 
-  abrirOfertadorLateral(factura: FacturasNegociables | FacturasPublicadas) {}
+  abrirOfertadorLateral(factura: FacturasNegociables | FacturasPublicadas): void {
+    const montoTotal = 'montoTotal' in factura ? factura.montoTotal : factura.giroLiquido;
+    const montoNeto = Math.round(montoTotal / 1.19);
+    const diasAlVencimiento =
+      'vencimiento' in factura ? this.calcularDiasVencimiento(factura.vencimiento) : 30;
+
+    this.facturaParaAside = {
+      folio: factura.folio,
+      razonSocial: this.clienteSeleccionado?.razonSocial ?? '',
+      status: 'tasaAplicada' in factura ? 'NEGOCIABLE' : 'PUBLICADA',
+      deudorName: factura.deudorName,
+      deudorRut: '',
+      montoNeto,
+      montoTotal,
+      diasAlVencimiento,
+    };
+    this.asideAbierto = true;
+  }
+
+  cerrarAside(): void {
+    this.asideAbierto = false;
+    this.facturaParaAside = null;
+  }
 }
