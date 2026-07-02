@@ -1,0 +1,70 @@
+<app-card [elevated]="false" [height]="'calc(100vh - 138px)'" padding="0">
+  <div class="columna-cartera">
+    @if (clienteSeleccionado) {
+      <div class="cabecera-activa animated fadeIn">
+        <span class="label-contexto">CLIENTE EN FOCO</span>
+
+        <h4>{{ clienteSeleccionado.razonSocial }}</h4>
+        <p>RUT: {{ clienteSeleccionado.rut }}</p>
+
+        <span class="badge-turquesa">
+          {{ clienteSeleccionado.totalFacturas }} Facturas Activas
+        </span>
+
+        <button
+          class="btn-clear"
+          (click)="deseleccionarCliente()"
+          title="Liberar cliente y cerrar tablero"
+        >
+          ×
+        </button>
+      </div>
+
+      <hr class="divisor-contexto" />
+    }
+
+    <span class="titulo-seccion">Leads por Facturas Recientes</span>
+
+    <div class="listado-scroll">
+      @for (cliente of clientesStream; track cliente.rut) {
+        @if (cliente.rut !== clienteSeleccionado?.rut) {
+          <!-- <div class="tarjeta-cliente" (click)="seleccionarCliente(cliente)">
+            <div class="info">
+              <h4>{{ cliente.razonSocial }}</h4>
+              <p>{{ cliente.rut }}</p>
+            </div>
+
+            <span class="badge-contador">
+              {{ cliente.totalFacturas }}
+            </span>
+          </div> -->
+          <lib-card-organizacion
+            [organizacion]="{
+              razon_social: cliente.razonSocial,
+              rut: cliente.rut,
+              totalFacturas: cliente.totalFacturas,
+              avatarUrl: undefined
+            }"
+            (cardClick)="seleccionarCliente(cliente)"
+          ></lib-card-organizacion>
+        }
+      } @empty {
+        <div
+          class="tarjeta-cliente"
+          style="cursor: default; border-style: dashed; background: transparent"
+        >
+          <p
+            style="
+              text-align: center;
+              width: 100%;
+              color: #5c677d;
+              font-size: 12px;
+            "
+          >
+            Sin facturas pendientes en tu cartera
+          </p>
+        </div>
+      }
+    </div>
+  </div>
+</app-card>

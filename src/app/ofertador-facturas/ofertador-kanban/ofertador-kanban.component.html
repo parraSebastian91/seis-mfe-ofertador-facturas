@@ -1,0 +1,103 @@
+<div class="contenedor-kanban-global animated fadeIn">
+  <app-card [elevated]="false" [height]="'calc(100vh - 138px)'">
+    <div card-title class="header-tablero">
+      <h3>Pipeline de Operaciones — {{ clienteSeleccionado?.razonSocial }}</h3>
+      <p>Monitoreo y asignación de tasas en tiempo real</p>
+    </div>
+    <div card-content class="tablero-grid">
+      <div class="columna-kanban">
+        <div class="columna-header">
+          <span class="dot indicador-azul"></span>
+          <h4>Publicadas</h4>
+          <span class="contador-columna">{{ facturasPublicadas.length }}</span>
+        </div>
+
+        <div class="zona-tarjetas">
+          @for (factura of facturasPublicadas; track factura.id) {
+            <div
+              class="tarjeta-factura"
+              (click)="abrirOfertadorLateral(factura)"
+            >
+              <div class="tarjeta-top">
+                <span class="folio">Folio: #{{ factura.folio }}</span>
+                <span class="plazo"
+                  >{{ calcularDiasVencimiento(factura.vencimiento) }} días</span
+                >
+              </div>
+              <h5 class="deudor">{{ factura.deudorName }}</h5>
+              <div class="tarjeta-bottom">
+                <span class="monto-label">Monto Total:</span>
+                <span class="monto-valor"
+                  >${{ factura.montoTotal | number: "1.0-0" }}</span
+                >
+              </div>
+            </div>
+          } @empty {
+            <div class="estado-vacio-columna">Cero documentos listos</div>
+          }
+        </div>
+      </div>
+
+      <div class="columna-kanban">
+        <div class="columna-header">
+          <span class="dot indicador-amarillo"></span>
+          <h4>Ofertadas</h4>
+          <span class="contador-columna">{{ facturasOfertadas.length }}</span>
+        </div>
+
+        <div class="zona-tarjetas">
+          @for (factura of facturasOfertadas; track factura.id) {
+            <div class="tarjeta-factura en-espera">
+              <div class="tarjeta-top">
+                <span class="folio">Folio: #{{ factura.folio }}</span>
+                <span class="tasa-badge"
+                  >Tasa: {{ factura.tasaAplicada }}%</span
+                >
+              </div>
+              <h5 class="deudor">{{ factura.deudorName }}</h5>
+              <div class="tarjeta-bottom">
+                <span class="monto-label">Giro Líquido:</span>
+                <span class="monto-valor-liquido"
+                  >${{ factura.giroLiquido | number: "1.0-0" }}</span
+                >
+              </div>
+            </div>
+          } @empty {
+            <div class="estado-vacio-columna">Sin ofertas pendientes</div>
+          }
+        </div>
+      </div>
+
+      <div class="columna-kanban">
+        <div class="columna-header">
+          <span class="dot indicador-turquesa alentar-parpadeo"></span>
+          <h4>Negociables</h4>
+          <span class="contador-columna">{{ facturasNegociables.length }}</span>
+        </div>
+
+        <div class="zona-tarjetas">
+          @for (factura of facturasNegociables; track factura.id) {
+            <div
+              class="tarjeta-factura alerta-negociacion"
+              (click)="abrirOfertadorLateral(factura)"
+            >
+              <div class="tarjeta-top">
+                <span class="folio">Folio: #{{ factura.folio }}</span>
+                <span class="badge-contraoferta">Contraoferta</span>
+              </div>
+              <h5 class="deudor">{{ factura.deudorName }}</h5>
+              <div class="tarjeta-bottom">
+                <span class="monto-label">Tasa PYME:</span>
+                <span class="monto-valor pyme-tasa"
+                  >{{ factura.tasaSolicitadaPyme }}%</span
+                >
+              </div>
+            </div>
+          } @empty {
+            <div class="estado-vacio-columna">Todo al día</div>
+          }
+        </div>
+      </div>
+    </div>
+  </app-card>
+</div>

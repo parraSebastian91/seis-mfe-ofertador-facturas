@@ -1,0 +1,157 @@
+.contenedor-kanban-global {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: calc(100vh - 138px);
+  // background-color: #060b19; /* Fondo negro-azul súper deep */
+  // padding: 24px;
+  box-sizing: border-box;
+}
+
+.header-tablero {
+  margin-bottom: 20px;
+}
+
+.header-tablero h3 {
+  margin: 0 0 4px 0;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.header-tablero p {
+  margin: 0;
+  color: #5c677d;
+  font-size: 13px;
+}
+
+/* Grilla de 3 columnas simétricas */
+.tablero-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  flex-grow: 1;
+  height: calc(100vh - 100px);
+}
+
+/* Columnas Individuales */
+.columna-kanban {
+  display: flex;
+  flex-direction: column;
+  background-color: #0b132b; /* Azul Marino del ecosistema */
+  border-radius: 8px;
+  border: 1px solid #1c2541;
+  padding: 12px;
+}
+
+.columna-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #1c2541;
+}
+
+.columna-header h4 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  flex-grow: 1;
+}
+
+/* Indicadores de color por estado */
+.dot { width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; }
+.indicador-azul { background-color: #48cae4; }
+.indicador-amarillo { background-color: #ffb703; }
+.indicador-turquesa { background-color: #00e5a3; }
+
+.contador-columna {
+  background-color: #1c2541;
+  color: #a5a5a5;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Carril contenedor de tarjetas con scroll interno */
+.zona-tarjetas {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  flex-grow: 1;
+  padding: 4px;
+}
+
+/* --- LA TARJETA DEL KANBAN --- */
+.tarjeta-factura {
+  background-color: #1c2541;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tarjeta-factura:hover {
+  border-color: #48cae4;
+  background-color: #232f54;
+  transform: translateY(-2px);
+}
+
+.tarjeta-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.folio { font-size: 11px; font-weight: 700; color: #48cae4; }
+.plazo { font-size: 11px; color: #a5a5a5; }
+
+.deudor {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.tarjeta-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+}
+
+.monto-label { color: #5c677d; }
+.monto-valor { color: #ffffff; font-weight: 700; font-size: 13px; }
+
+/* Variaciones por Estado */
+.en-espera { opacity: 0.75; cursor: not-allowed; }
+.en-espera:hover { border-color: transparent; transform: none; }
+.tasa-badge { font-size: 10px; background: rgba(255, 183, 3, 0.15); color: #ffb703; padding: 2px 4px; border-radius: 4px; font-weight: 600; }
+.monto-valor-liquido { color: #ffb703; font-weight: 700; }
+
+/* Estilo para las alertas de Contraofertas (Parpadeo sutil) */
+.alerta-negociacion {
+  border-left: 3px solid #00e5a3;
+}
+.badge-contraoferta { font-size: 10px; background: rgba(0, 229, 163, 0.15); color: #00e5a3; padding: 2px 4px; border-radius: 4px; font-weight: 600; }
+.pyme-tasa { color: #00e5a3; font-weight: 700; font-size: 13px; }
+
+@keyframes pulse {
+  0% { opacity: 0.4; }
+  50% { opacity: 1; }
+  100% { opacity: 0.4; }
+}
+.alentar-parpadeo { animation: pulse 2s infinite; }
+
+.estado-vacio-columna {
+  text-align: center;
+  color: #3a506b;
+  font-size: 12px;
+  padding: 20px;
+  border: 1px dashed #1c2541;
+  border-radius: 6px;
+}

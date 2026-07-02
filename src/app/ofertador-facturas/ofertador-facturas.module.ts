@@ -11,7 +11,9 @@ import {
   CardTitleDirective,
   CardFooterDirective,
   SearchableCardSelectComponent,
+  CardOrganizacionComponent,
 } from 'shared-utils';
+import { CarteraLeadsComponent } from './cartera-leads/cartera-leads.component';
 
 @NgModule({
   imports: [
@@ -24,6 +26,8 @@ import {
     CardTitleDirective,
     CardFooterDirective,
     SearchableCardSelectComponent,
+    CarteraLeadsComponent,
+    CardOrganizacionComponent
   ],
 })
 export class OfertadorFacturasModule {}

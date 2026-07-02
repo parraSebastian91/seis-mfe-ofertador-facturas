@@ -1,0 +1,154 @@
+/* Contenedor principal de la primera columna */
+.columna-cartera {
+  display: flex;
+  flex-direction: column;
+  width: 318px; /* Ancho fijo ideal para no comerse el espacio del Kanban */
+  height: calc(100vh - 138px);
+  background-color: #0b132b; /* Azul Marino Profundo Institucional */
+  border-right: 1px solid #1c2541;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+/* --- SECCIÓN A: CABECERA ANCLADA --- */
+.cabecera-activa {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-color: #1c2541; /* Un tono más claro para denotar elevación */
+  border: 1px solid #48cae4; /* Borde sutil Turquesa para denotar foco activo */
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.label-contexto {
+  font-size: 10px;
+  font-weight: 700;
+  color: #48cae4; /* Turquesa Eléctrico */
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+/* Botón de cierre para deseleccionar y liberar el Kanban */
+.btn-clear {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  color: #6c757d;
+  font-size: 18px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.btn-clear:hover {
+  color: #ff4d4d; /* Alerta de salida */
+}
+
+.divisor-contexto {
+  border: 0;
+  border-top: 1px dashed #3a506b;
+  margin: 8px 0 16px 0;
+}
+
+/* --- SECCIÓN B: LISTADO SCROLLABLE --- */
+.titulo-seccion {
+  font-size: 11px;
+  font-weight: 600;
+  color: #5c677d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.listado-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto; /* Permite scroll infinito solo en la lista de abajo */
+  flex-grow: 1;
+  padding: 0 3px 0 3px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, .12) transparent;
+
+  &::-webkit-scrollbar { width: 5px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, .12);
+    border-radius: 4px;
+    &:hover { background: rgba(255, 255, 255, .22); }
+  }
+}
+
+/* --- COMPONENTE ATÓMICO: LA TARJETA DE CLIENTE --- */
+.tarjeta-cliente {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1c2541;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Efecto Hover para incitar al clic */
+.tarjeta-cliente:hover {
+  background-color: #232f54;
+  border-color: #3a506b;
+  transform: translateX(2px);
+}
+
+.tarjeta-cliente h4 {
+  margin: 0 0 4px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.tarjeta-cliente p {
+  margin: 0;
+  font-size: 11px;
+  color: #a5a5a5; /* RUT en gris sutil */
+}
+
+/* Contadores e insignias dinámicas (Badges) */
+.badge-contador {
+  background-color: #3a506b;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+/* El badge cuando está en modo foco superior */
+.badge-turquesa {
+  background-color: rgba(72, 202, 228, 0.15);
+  color: #48cae4;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-top: 8px;
+  text-align: center;
+}
+
+/* Animación de entrada suave para el anclaje */
+.animated {
+  animation-duration: 0.25s;
+  animation-fill-mode: both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fadeIn { animation-name: fadeIn; }

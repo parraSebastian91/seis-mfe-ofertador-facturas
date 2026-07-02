@@ -46,6 +46,8 @@ import {
   SSEService,
 } from 'shared-utils';
 import { environment } from '../../../../../seis-portal/src/environments/environment.development';
+import { CarteraLeadsComponent } from '../cartera-leads/cartera-leads.component';
+import { OfertadorKanbanComponent } from '../ofertador-kanban/ofertador-kanban.component';
 
 @Component({
   selector: 'app-ofertador-home',
@@ -66,6 +68,8 @@ import { environment } from '../../../../../seis-portal/src/environments/environ
     OcrNotesListComponent,
     CardComponent,
     CardTitleDirective,
+    CarteraLeadsComponent,
+    OfertadorKanbanComponent
   ],
 })
 export class DashboardHomeComponent implements OnInit, OnDestroy {

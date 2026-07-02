@@ -8,14 +8,15 @@ $navbar-height: 135px;
   overflow: hidden;
   position: relative;
   padding: 1.5rem;
+  gap: 10px
 }
 
 // ─── Columna 1: Marketplace (1/5 en lg+) ─────────────────────────────────────
 
 .col-marketplace {
-  flex: 0 0 20%;
+  // flex: 0 0 20%;
   min-width: 220px;
-  max-width: 320px;
+  // max-width: 320px;
   height: 100%;
 
   display: flex;

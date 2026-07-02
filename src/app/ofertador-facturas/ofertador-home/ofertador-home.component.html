@@ -1,43 +1,85 @@
 <app-toast-container></app-toast-container>
 
-<app-modal-confirmacion-oferta [mostrar]="mostrarModalConfirmacion" [resumen]="resumenOfertaModal"
-  (confirmado)="onOfertaConfirmada()" (cancelado)="onOfertaCancelada()">
+<app-modal-confirmacion-oferta
+  [mostrar]="mostrarModalConfirmacion"
+  [resumen]="resumenOfertaModal"
+  (confirmado)="onOfertaConfirmada()"
+  (cancelado)="onOfertaCancelada()"
+>
 </app-modal-confirmacion-oferta>
 
 <!-- ─── Layout: CA-01 responsive (HU-27) ─────────────────────────────────── -->
 <div class="page-layout">
-
   <!-- Drawer overlay (md breakpoint) -->
-  <div class="drawer-overlay" [class.open]="drawerOpen" (click)="drawerOpen = false" (keydown.escape)="drawerOpen = false" aria-hidden="true"></div>
+  <div
+    class="drawer-overlay"
+    [class.open]="drawerOpen"
+    (click)="drawerOpen = false"
+    (keydown.escape)="drawerOpen = false"
+    aria-hidden="true"
+  ></div>
 
   <!-- Columna 1: Lista de facturas (1/5 lg+, drawer en md) -->
-  <aside class="col-marketplace" [class.drawer-open]="drawerOpen" aria-label="Lista de facturas disponibles">
-    <app-facturas-marketplace
+  <aside
+    class="col-marketplace"
+    [class.drawer-open]="drawerOpen"
+    aria-label="Lista de facturas disponibles"
+  >
+    <!-- <app-facturas-marketplace
       [facturaSeleccionadaId]="facturaSeleccionada?.facturaId ?? null"
       (seleccionarFactura)="seleccionarFactura($event)">
-    </app-facturas-marketplace>
+    </app-facturas-marketplace> -->
+    <!-- <app-cartera-leads
+      [clientesStream]="clientesStream"
+      [clienteSeleccionado]="clienteSeleccionado"
+      (seleccionarCliente)="seleccionarCliente($event)"
+      (deseleccionarCliente)="deseleccionarCliente()"
+      > -->
+    <app-cartera-leads> </app-cartera-leads>
   </aside>
 
   <!-- FAB para abrir drawer en mobile/tablet -->
-  <button type="button" class="btn-drawer-fab" (click)="drawerOpen = !drawerOpen"
-    aria-label="Ver lista de facturas" [attr.aria-expanded]="drawerOpen">
+  <button
+    type="button"
+    class="btn-drawer-fab"
+    (click)="drawerOpen = !drawerOpen"
+    aria-label="Ver lista de facturas"
+    [attr.aria-expanded]="drawerOpen"
+  >
     &#9776;
   </button>
 
   <!-- Columna 2-4: Secciones de detalle (4/5 lg+) -->
   <main class="col-detalle" aria-label="Detalle de factura">
 
-    <!-- Overlay: factura retirada (CA-05) -->
-    <div class="overlay-retirada" *ngIf="!facturaDisponible" role="alertdialog" aria-modal="true" aria-label="Factura no disponible">
-      <app-card [elevated]="true" glowColor="var(--color-error)" radius="12px" width="360px">
+    <app-ofertador-kanban></app-ofertador-kanban>
+
+    <!-- <div
+      class="overlay-retirada"
+      *ngIf="!facturaDisponible"
+      role="alertdialog"
+      aria-modal="true"
+      aria-label="Factura no disponible"
+    >
+      <app-card
+        [elevated]="true"
+        glowColor="var(--color-error)"
+        radius="12px"
+        width="360px"
+      >
         <div card-title>
           <span class="overlay-retirada__icon" aria-hidden="true">⚠</span>
           <span class="text-h3">Factura no disponible</span>
         </div>
         <div card-content class="overlay-retirada__body">
-          <p class="text-body">Esta factura ya no está disponible en el marketplace.</p>
-          <button type="button" class="btn-limpiar-seleccion"
-            (click)="facturaSeleccionada = null; facturaDisponible = true">
+          <p class="text-body">
+            Esta factura ya no está disponible en el marketplace.
+          </p>
+          <button
+            type="button"
+            class="btn-limpiar-seleccion"
+            (click)="facturaSeleccionada = null; facturaDisponible = true"
+          >
             Seleccionar otra factura
           </button>
         </div>
@@ -46,20 +88,22 @@
 
     <div class="detalle-inner" [class.bloqueado]="!facturaDisponible">
       <div class="estadisticas">
-        <!-- Sección 2: KPIs cliente/deudor (CA-01…CA-04 HU-28) -->
         <app-kpis-factura-header
           [factura]="facturaSeleccionada"
           [montoAnticipar]="montoAnticipar"
-          (cupoExcedido)="cupoExcedido = $event">
+          (cupoExcedido)="cupoExcedido = $event"
+        >
         </app-kpis-factura-header>
       </div>
       <div class="factura-detail">
         <div class="visor-wrapper">
           <div class="visor-documental">
-            <!-- Sección 3: Visor PDF (CA-05 HU-28) -->
-            <app-visor-documental [url]="urlDocumento" [loading]="loadingDoc" [error]="errorDoc">
+            <app-visor-documental
+              [url]="urlDocumento"
+              [loading]="loadingDoc"
+              [error]="errorDoc"
+            >
             </app-visor-documental>
-            <!-- Sección 3: Notas OCR solo lectura (CA-06 HU-28) -->
             <app-ocr-notes-list [notas]="notasOcr" [readOnly]="true">
             </app-ocr-notes-list>
             <app-validador-delta-ocr [comparaciones]="comparacionesOcr">
@@ -75,18 +119,26 @@
             [hayOfertasCompetidoras]="hayOfertasCompetidoras"
             [mostrarOverlayCambios]="mostrarOverlayCambios"
             [cambioActual]="cambioActual"
-            (liquidacionChange)="liquidacion = $event; montoAnticipar = $event?.montoAnticipado ?? 0">
+            (liquidacionChange)="
+              liquidacion = $event;
+              montoAnticipar = $event?.montoAnticipado ?? 0
+            "
+          >
           </app-calculadora-liquidacion>
 
           <app-pre-liquidacion
             [liquidacion]="liquidacion"
-            [permitirEnvio]="facturaSeleccionada !== null && !mostrarOverlayCambios && facturaDisponible && !cupoExcedido"
-            (enviarOferta)="onEnviarOferta($event)">
+            [permitirEnvio]="
+              facturaSeleccionada !== null &&
+              !mostrarOverlayCambios &&
+              facturaDisponible &&
+              !cupoExcedido
+            "
+            (enviarOferta)="onEnviarOferta($event)"
+          >
           </app-pre-liquidacion>
         </div>
       </div>
-    </div>
-
+    </div> -->
   </main>
-
 </div>
