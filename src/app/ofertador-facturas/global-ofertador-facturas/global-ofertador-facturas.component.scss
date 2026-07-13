@@ -1,0 +1,143 @@
+/* ==================================================================== */
+/* LAYOUT BASE GLOBAL (Consola de Despacho)                             */
+/* ==================================================================== */
+.mesa-global-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr; /* Panel izquierdo fijo, grilla flexible */
+  width: 100vw;
+  height: 100vh;
+  background-color: #060b19; /* Fondo negro-azul deep corporativo */
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* ==================================================================== */
+/* PANEL IZQUIERDO: TRIAJE Y METRICAS                                   */
+/* ==================================================================== */
+.panel-filtros {
+  background-color: #0b132b; /* Azul Marino del ecosistema */
+  border-right: 1px solid #1c2541;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+.kpi-card-global {
+  background: linear-gradient(135deg, #1c2541 0%, #0b132b 100%);
+  border: 1px solid #3a506b;
+  border-radius: 8px;
+  padding: 16px;
+}
+.kpi-label { font-size: 10px; font-weight: 700; color: #48cae4; letter-spacing: 0.5px; text-transform: uppercase; }
+.kpi-monto { margin: 8px 0 4px 0; color: #00e5a3; font-size: 26px; font-weight: 700; }
+.kpi-sub { margin: 0; color: #a5a5a5; font-size: 12px; }
+
+/* Input del Buscador Predictivo */
+.input-search-ff {
+  width: 100%;
+  background-color: #060b19;
+  border: 1px solid #1c2541;
+  border-radius: 4px;
+  padding: 10px 12px;
+  color: #ffffff;
+  font-size: 13px;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.input-search-ff:focus {
+  border-color: #48cae4;
+}
+
+.titulo-filtro { font-size: 11px; font-weight: 600; color: #5c677d; text-transform: uppercase; margin-bottom: 12px; display: block; letter-spacing: 0.5px; }
+.tags-deudores { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.tag-btn {
+  background-color: #1c2541;
+  border: 1px solid transparent;
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tag-btn.active, .tag-btn:hover {
+  background-color: #48cae4;
+  color: #060b19;
+  font-weight: 600;
+}
+
+.btn-filtro-monto {
+  background-color: rgba(255, 183, 3, 0.05);
+  border: 1px solid #ffb703;
+  color: #ffb703;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  transition: all 0.2s;
+}
+.btn-filtro-monto.filtro-activo {
+  background-color: #ffb703;
+  color: #060b19;
+}
+
+/* ==================================================================== */
+/* PANEL DERECHO: GRILLA DE ALTA DENSIDAD                               */
+/* ==================================================================== */
+.panel-grilla {
+  padding: 24px;
+  overflow-y: auto;
+  height: 100vh;
+  box-sizing: border-box;
+}
+.table-container {
+  background-color: #0b132b;
+  border: 1px solid #1c2541;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tabla-ff { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; color: #ffffff; }
+.tabla-ff th { background-color: #1c2541; padding: 14px 16px; color: #48cae4; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+.tabla-ff td { padding: 14px 16px; border-bottom: 1px solid #1c2541; cursor: pointer; }
+
+.fila-factura { transition: background-color 0.15s; }
+.fila-factura:hover { background-color: #16223f; }
+
+/* Resaltado de Facturas sobre $20M */
+.fila-factura.ticket-alto { background-color: rgba(0, 225, 163, 0.01); }
+.fila-factura.ticket-alto td { border-left: 2px solid #00e5a3; }
+
+/* Estado Activo cuando haces clic para inspeccionar */
+.fila-factura.fila-activa {
+  background-color: #1c2541 !important;
+}
+
+.emisor-cell { display: flex; flex-direction: column; gap: 2px; }
+.emisor-cell span { color: #5c677d; font-size: 11px; }
+.badge-folio { background-color: #1c2541; color: #48cae4; padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 11px; }
+.monto-destacado { font-weight: 700; }
+
+/* ==================================================================== */
+/* ASIDE DRAWER — movido a GlobalOfertadorAsideComponent                */
+/* ==================================================================== */
+/* El drawer es ahora un componente atómico independiente.              */
+/* Ver: global-ofertador-aside/global-ofertador-aside.component.scss    */
+/* ==================================================================== */
+//   display: flex;
+//   flex-direction: column;
+//   gap: 10px;
+//   font-size: 13px;
+// }
+// /* ANIMACIONES */
+// .animated { animation-duration: 0.25s; animation-fill-mode: both; }
+// @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+// .fadeIn { animation-name: fadeIn; }

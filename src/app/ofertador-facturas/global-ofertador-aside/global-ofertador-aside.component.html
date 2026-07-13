@@ -1,0 +1,94 @@
+<div
+  class="drawer-overlay"
+  [class.abierto]="abierto"
+  (click)="cerrar.emit()">
+
+  <div class="drawer-container" (click)="$event.stopPropagation()">
+
+    @if (factura) {
+      <div class="drawer-header">
+        <div class="header-info">
+          <span class="badge-estado-global">Mesa de Entrada</span>
+          <h4>Inspección de Oportunidad</h4>
+          <p class="emisor-label">ID Documento: {{ factura.id }}</p>
+        </div>
+        <button class="btn-cerrar-drawer" (click)="cerrar.emit()">×</button>
+      </div>
+
+      <div class="drawer-content">
+
+        <div class="seccion-bloque">
+          <h5>📊 Datos Generales del Lead</h5>
+          <div class="contenedor-detalles-global">
+            <div class="item-detalle">
+              <span>Razón Social Cedente:</span>
+              <strong>{{ factura.emisorName }}</strong>
+            </div>
+            <div class="item-detalle">
+              <span>RUT Cedente:</span>
+              <span>{{ factura.rutEmisor }}</span>
+            </div>
+            <div class="item-detalle">
+              <span>Deudor / Aceptante:</span>
+              <strong>{{ factura.deudorName }}</strong>
+            </div>
+            <hr class="linea-drawer">
+            <div class="item-detalle">
+              <span>Monto Neto:</span>
+              <span>${{ factura.montoNeto | number:'1.0-0' }}</span>
+            </div>
+            <div class="item-detalle total-destacado">
+              <span>Monto Total Factura:</span>
+              <span class="monto-final">${{ factura.montoTotal | number:'1.0-0' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="seccion-bloque">
+          <h5>🛡️ Monitor de Mercado & Competencia</h5>
+          <div
+            class="contenedor-competencia"
+            [class.alerta-mercado]="factura.competencia.estaEnOtrasPlataformas">
+
+            <div class="estado-mercado">
+              @if (factura.competencia.estaEnOtrasPlataformas) {
+                <span class="badge-rojo">⚠️ Detectada en la Competencia</span>
+                <p class="text-competencia">
+                  Este documento también fue indexado en:
+                  <strong>{{ factura.competencia.plataformasDetectadas.join(', ') }}</strong>.
+                </p>
+              } @else {
+                <span class="badge-verde">✓ Exclusiva en Flowyfact</span>
+                <p class="text-competencia">No se registran publicaciones duplicadas en el mercado formal.</p>
+              }
+            </div>
+
+            <div class="trafico-interno">
+              <div
+                class="indicador-pulso"
+                [class.activo]="factura.competencia.ejecutivasMirandoActualmente > 1">
+              </div>
+              <span>
+                Hay <strong>{{ factura.competencia.ejecutivasMirandoActualmente }}</strong>
+                ejecutivas analizando este lead en caliente.
+              </span>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="seccion-bloque botonera-fija">
+          <button class="btn-capturar-global" (click)="capturar.emit(factura)">
+            📥 Asignar a mi Cartera Personal
+          </button>
+          <p class="ayuda-accion">
+            Al confirmar, el documento pasará inmediatamente a tu estado de "Publicadas"
+            en tu cartera de gestión privada.
+          </p>
+        </div>
+
+      </div>
+    }
+
+  </div>
+</div>

@@ -1,0 +1,110 @@
+<div class="mesa-global-layout animated fadeIn">
+
+  <aside class="panel-filtros">
+    <div class="kpi-card-global">
+      <span class="kpi-label">POZO GLOBAL DISPONIBLE</span>
+      <h2 class="kpi-monto">${{ totalMontoPool() | number:'1.0-0' }}</h2>
+      <p class="kpi-sub">{{ facturasFiltradas().length }} documentos filtrados</p>
+    </div>
+
+    <div class="grupo-filtros">
+      <span class="titulo-filtro">Buscador Rápido</span>
+      <input
+        type="text"
+        class="input-search-ff"
+        placeholder="Ej: Folio, RUT, Razón Social..."
+        [ngModel]="busquedaTexto()"
+        (ngModelChange)="busquedaTexto.set($event)">
+    </div>
+
+    <div class="grupo-filtros">
+      <span class="titulo-filtro">Filtro por Deudor AAA</span>
+      <div class="tags-deudores">
+        <button
+          class="tag-btn"
+          [class.active]="filtroDeudor() === 'Todos'"
+          (click)="filtroDeudor.set('Todos')">
+          Todos
+        </button>
+        <button
+          class="tag-btn"
+          [class.active]="filtroDeudor() === 'Walmart Chile'"
+          (click)="filtroDeudor.set('Walmart Chile')">
+          Walmart
+        </button>
+        <button
+          class="tag-btn"
+          [class.active]="filtroDeudor() === 'Cencosud'"
+          (click)="filtroDeudor.set('Cencosud')">
+          Cencosud
+        </button>
+        <button
+          class="tag-btn"
+          [class.active]="filtroDeudor() === 'Agrosuper'"
+          (click)="filtroDeudor.set('Agrosuper')">
+          Agrosuper
+        </button>
+      </div>
+    </div>
+
+    <div class="grupo-filtros">
+      <span class="titulo-filtro">Segmentación de Riesgo</span>
+      <button
+        class="btn-filtro-monto"
+        [class.filtro-activo]="soloTicketsGrandes()"
+        (click)="soloTicketsGrandes.set(!soloTicketsGrandes())">
+        {{ soloTicketsGrandes() ? '⚡ Mostrando solo > $20M' : '🔍 Filtrar Tickets > $20,000,000' }}
+      </button>
+    </div>
+  </aside>
+
+  <main class="panel-grilla">
+    <div class="table-container">
+      <table class="tabla-ff">
+        <thead>
+          <tr>
+            <th>Emisor (PYME)</th>
+            <th>Deudor (Pagador)</th>
+            <th>Folio</th>
+            <th>Monto Total</th>
+            <th>Vencimiento</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (factura of facturasFiltradas(); track factura.id) {
+            <tr
+              class="fila-factura"
+              [class.ticket-alto]="factura.montoTotal >= 20000000"
+              [class.fila-activa]="factura.id === facturaSeleccionada()?.id"
+              (click)="seleccionarFactura(factura)">
+              <td>
+                <div class="emisor-cell">
+                  <strong>{{ factura.emisorName }}</strong>
+                  <span>RUT: {{ factura.rutEmisor }}</span>
+                </div>
+              </td>
+              <td>{{ factura.deudorName }}</td>
+              <td><span class="badge-folio">#{{ factura.folio }}</span></td>
+              <td class="monto-destacado">${{ factura.montoTotal | number:'1.0-0' }}</td>
+              <td>{{ calcularDiasVencimiento(factura.vencimiento) }} días</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" class="text-center p-5 text-muted bg-deep">
+                No se encontraron facturas que coincidan con los filtros aplicados.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <app-global-ofertador-aside
+    [factura]="facturaSeleccionada()"
+    [abierto]="!!facturaSeleccionada()"
+    (cerrar)="cerrarAside()"
+    (capturar)="capturarFactura($event)">
+  </app-global-ofertador-aside>
+
+</div>
