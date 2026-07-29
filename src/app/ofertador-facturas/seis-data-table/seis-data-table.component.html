@@ -1,0 +1,140 @@
+<!-- ══════════════════════════════════════════════════════════════════════
+     SEIS DATA TABLE — Grilla reutilizable con headers sticky, sort,
+     row-click y menú de acciones (3 puntos / dropdown fixed)
+     ══════════════════════════════════════════════════════════════════════ -->
+
+<div class="seis-table-outer">
+  <div class="seis-table-scroll" #scrollContainer>
+    <table class="seis-table">
+
+      <!-- ── HEADERS STICKY ───────────────────────────────────────────── -->
+      <thead>
+        <tr>
+          @for (col of columns; track col.key) {
+            <th
+              [style.width]="col.width ?? 'auto'"
+              [class.th-sortable]="col.sortable"
+              [class.th-sorted]="sortColumn() === col.key"
+              [class.align-center]="col.align === 'center'"
+              [class.align-right]="col.align === 'right'"
+              (click)="toggleSort(col)">
+              <span class="th-inner">
+                <span class="th-label">{{ col.header }}</span>
+                @if (col.sortable) {
+                  <span
+                    class="sort-icon"
+                    [class.sort-icon--active]="sortColumn() === col.key">
+                    @if (sortColumn() === col.key && sortDirection() === 'asc') {
+                      <svg width="8" height="10" viewBox="0 0 8 10" fill="currentColor">
+                        <path d="M4 1L7.5 6.5H0.5L4 1Z"/>
+                        <path d="M4 9L0.5 3.5H7.5L4 9Z" opacity="0.3"/>
+                      </svg>
+                    } @else if (sortColumn() === col.key && sortDirection() === 'desc') {
+                      <svg width="8" height="10" viewBox="0 0 8 10" fill="currentColor">
+                        <path d="M4 1L7.5 6.5H0.5L4 1Z" opacity="0.3"/>
+                        <path d="M4 9L0.5 3.5H7.5L4 9Z"/>
+                      </svg>
+                    } @else {
+                      <svg width="8" height="10" viewBox="0 0 8 10" fill="currentColor" opacity="0.35">
+                        <path d="M4 1L7.5 6.5H0.5L4 1Z"/>
+                        <path d="M4 9L0.5 3.5H7.5L4 9Z"/>
+                      </svg>
+                    }
+                  </span>
+                }
+              </span>
+            </th>
+          }
+
+          @if (rowActions.length > 0) {
+            <th class="th-actions"></th>
+          }
+        </tr>
+      </thead>
+
+      <!-- ── BODY ─────────────────────────────────────────────────────── -->
+      <tbody>
+        @for (row of data; track trackByFn($index, row)) {
+          <tr
+            class="seis-tr"
+            [class.tr-clickable]="rowClickable"
+            [class.tr-highlighted]="rowHighlightFn ? rowHighlightFn(row) : false"
+            [ngClass]="rowClassFn ? (rowClassFn(row) ?? '') : ''"
+            (click)="onRowClick(row)">
+
+            @for (col of columns; track col.key) {
+              <td
+                class="seis-td"
+                [class.align-center]="col.align === 'center'"
+                [class.align-right]="col.align === 'right'">
+                @if (getCellTemplate(col.key); as tmpl) {
+                  <!-- Celda con ng-template custom del padre -->
+                  <ng-container *ngTemplateOutlet="tmpl; context: { $implicit: row }"></ng-container>
+                } @else if (col.formatter) {
+                  <!-- Celda con formateador simple -->
+                  {{ col.formatter(getCellValue(row, col.key), row) }}
+                } @else {
+                  <!-- Celda plain -->
+                  {{ getCellValue(row, col.key) }}
+                }
+              </td>
+            }
+
+            <!-- ── Columna de acciones (3 puntos) ──────────────────── -->
+            @if (rowActions.length > 0) {
+              <td
+                class="seis-td td-actions"
+                (click)="$event.stopPropagation()">
+                <button
+                  class="btn-dots"
+                  [class.btn-dots--open]="openMenuRowId() === getRowId(row)"
+                  title="Acciones"
+                  (click)="toggleMenu(row, $event)">
+                  <span class="dot"></span>
+                  <span class="dot"></span>
+                  <span class="dot"></span>
+                </button>
+              </td>
+            }
+
+          </tr>
+        } @empty {
+          <tr>
+            <td
+              class="td-empty"
+              [attr.colspan]="columns.length + (rowActions.length > 0 ? 1 : 0)">
+              {{ emptyMessage }}
+            </td>
+          </tr>
+        }
+      </tbody>
+
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     DROPDOWN PORTAL — position: fixed, no es clippeado por overflow
+     ══════════════════════════════════════════════════════════════════════ -->
+@if (openMenuRow() !== null && menuPosition()) {
+  <div
+    class="dots-menu"
+    [style.top.px]="menuPosition()!.top"
+    [style.left.px]="menuPosition()!.left"
+    (click)="$event.stopPropagation()">
+
+    @for (action of rowActions; track action.key) {
+      <button
+        class="dots-menu-item"
+        [class.dots-menu-item--danger]="action.danger"
+        [class.dots-menu-item--disabled]="action.disabled ? action.disabled(openMenuRow()) : false"
+        (click)="onActionClick(action, $event)">
+        @if (action.icon) {
+          <span class="action-icon">{{ action.icon }}</span>
+        }
+        <span>{{ action.label }}</span>
+      </button>
+    }
+
+  </div>
+}

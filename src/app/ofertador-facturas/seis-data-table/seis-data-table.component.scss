@@ -1,0 +1,305 @@
+/* ════════════════════════════════════════════════════════════════════════
+   SEIS DATA TABLE — Estilos del componente reutilizable
+   Design language: dark navy (#060b19 / #0b132b / #1c2541)
+   ════════════════════════════════════════════════════════════════════════ */
+
+// ─── Host ────────────────────────────────────────────────────────────────────
+
+:host {
+  display: block;
+  height: 100%;
+}
+
+// ─── Shell exterior (border-radius + borde, sin overflow) ────────────────────
+
+.seis-table-outer {
+  height: 100%;
+  border-radius: 8px;
+  border: 1px solid #1c2541;
+  background-color: #0b132b;
+  overflow: hidden; // Recorta las esquinas del <table> para el border-radius
+  display: flex;
+  flex-direction: column;
+}
+
+// ─── Scroll container interior ───────────────────────────────────────────────
+
+.seis-table-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: auto;
+
+  // Scrollbar personalizado — webkit
+  &::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #1c2541;
+    border-radius: 4px;
+    &:hover {
+      background-color: #3a506b;
+    }
+  }
+
+  // Firefox
+  scrollbar-width: thin;
+  scrollbar-color: #1c2541 transparent;
+}
+
+// ─── Tabla ───────────────────────────────────────────────────────────────────
+
+.seis-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  color: #ffffff;
+  table-layout: auto;
+}
+
+// ─── THEAD sticky ────────────────────────────────────────────────────────────
+
+thead tr {
+  th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #1c2541;
+    padding: 13px 16px;
+    color: #48cae4;
+    font-weight: 600;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    text-align: left;
+    white-space: nowrap;
+    // Línea inferior que oculta el scroll bajo el header
+    box-shadow: 0 1px 0 0 #0d1a33;
+
+    &.align-center { text-align: center; }
+    &.align-right  { text-align: right; }
+
+    &.th-sortable {
+      cursor: pointer;
+      user-select: none;
+
+      &:hover {
+        background-color: #222e54;
+        color: #ffffff;
+      }
+    }
+
+    &.th-sorted {
+      color: #ffffff;
+    }
+
+    &.th-actions {
+      width: 48px;
+      min-width: 48px;
+      padding: 0;
+    }
+  }
+}
+
+.th-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.th-label {
+  line-height: 1;
+}
+
+.sort-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: #48cae4;
+  transition: color 0.15s;
+
+  &.sort-icon--active {
+    color: #ffffff;
+  }
+}
+
+// ─── TBODY rows ──────────────────────────────────────────────────────────────
+
+.seis-tr {
+  border-bottom: 1px solid #111d38;
+  transition: background-color 0.12s;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &.tr-clickable {
+    cursor: pointer;
+
+    &:hover {
+      background-color: #16223f;
+    }
+  }
+
+  &.tr-highlighted {
+    background-color: #1c2541 !important;
+  }
+
+  // Clase opcional del padre (ej: ticket-alto)
+  &.ticket-alto {
+    background-color: rgba(0, 229, 163, 0.015);
+
+    .seis-td {
+      border-left: 2px solid #00e5a3;
+
+      &:not(:first-child) {
+        border-left: none;
+      }
+    }
+
+    .seis-td:first-child {
+      border-left: 2px solid #00e5a3;
+    }
+  }
+}
+
+// ─── TBODY cells ─────────────────────────────────────────────────────────────
+
+.seis-td {
+  padding: 13px 16px;
+  vertical-align: middle;
+
+  &.align-center { text-align: center; }
+  &.align-right  { text-align: right; }
+
+  &.td-actions {
+    padding: 0;
+    width: 48px;
+    min-width: 48px;
+    text-align: center;
+  }
+}
+
+.td-empty {
+  padding: 48px 20px;
+  text-align: center;
+  color: #5c677d;
+  font-size: 13px;
+  font-style: italic;
+}
+
+// ─── Botón 3 puntos ──────────────────────────────────────────────────────────
+
+.btn-dots {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s;
+
+  .dot {
+    display: block;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: #3a506b;
+    transition: background-color 0.15s;
+  }
+
+  &:hover,
+  &.btn-dots--open {
+    background-color: #1c2541;
+
+    .dot {
+      background-color: #a5b4c8;
+    }
+  }
+
+  &.btn-dots--open .dot {
+    background-color: #48cae4;
+  }
+}
+
+// ─── Dropdown menú (position: fixed — portal fuera del overflow) ─────────────
+
+.dots-menu {
+  position: fixed;
+  z-index: 1000;
+  min-width: 172px;
+  background-color: #0d1a33;
+  border: 1px solid #1c2541;
+  border-radius: 8px;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.3),
+    0 12px 32px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  animation: menu-appear 0.1s ease;
+}
+
+@keyframes menu-appear {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dots-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #111d38;
+  color: #ccd6e0;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.12s, color 0.12s;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover:not(.dots-menu-item--disabled) {
+    background-color: #1c2541;
+    color: #ffffff;
+  }
+
+  &.dots-menu-item--danger {
+    color: #ff6b6b;
+
+    &:hover {
+      background-color: rgba(255, 77, 77, 0.1);
+      color: #ff4d4d;
+    }
+  }
+
+  &.dots-menu-item--disabled {
+    color: #3a506b;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  .action-icon {
+    font-size: 14px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+}

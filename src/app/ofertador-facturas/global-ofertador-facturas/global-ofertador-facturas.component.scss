@@ -1,23 +1,28 @@
 /* ==================================================================== */
 /* LAYOUT BASE GLOBAL (Consola de Despacho)                             */
 /* ==================================================================== */
+
+
+$navbar-height: 135px;
 .mesa-global-layout {
   display: grid;
   grid-template-columns: 320px 1fr; /* Panel izquierdo fijo, grilla flexible */
-  width: 100vw;
-  height: 100vh;
-  background-color: #060b19; /* Fondo negro-azul deep corporativo */
+  // width: 100vw;
+  height: calc(100vh - #{$navbar-height});
+  // background-color: #060b19; /* Fondo negro-azul deep corporativo */
   box-sizing: border-box;
   overflow: hidden;
+  gap: 20px;
+  padding: 0 24px;
 }
 
 /* ==================================================================== */
 /* PANEL IZQUIERDO: TRIAJE Y METRICAS                                   */
 /* ==================================================================== */
 .panel-filtros {
-  background-color: #0b132b; /* Azul Marino del ecosistema */
-  border-right: 1px solid #1c2541;
-  padding: 20px;
+  // background-color: #0b132b; /* Azul Marino del ecosistema */
+  // border-right: 1px solid #1c2541;
+  // padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -93,38 +98,40 @@
 /* PANEL DERECHO: GRILLA DE ALTA DENSIDAD                               */
 /* ==================================================================== */
 .panel-grilla {
-  padding: 24px;
-  overflow-y: auto;
-  height: 100vh;
+  overflow: hidden;  // El scroll lo maneja SeisDataTableComponent internamente
+  height: calc(100vh - #{$navbar-height});
   box-sizing: border-box;
-}
-.table-container {
-  background-color: #0b132b;
-  border: 1px solid #1c2541;
-  border-radius: 8px;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
-.tabla-ff { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; color: #ffffff; }
-.tabla-ff th { background-color: #1c2541; padding: 14px 16px; color: #48cae4; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
-.tabla-ff td { padding: 14px 16px; border-bottom: 1px solid #1c2541; cursor: pointer; }
-
-.fila-factura { transition: background-color 0.15s; }
-.fila-factura:hover { background-color: #16223f; }
-
-/* Resaltado de Facturas sobre $20M */
-.fila-factura.ticket-alto { background-color: rgba(0, 225, 163, 0.01); }
-.fila-factura.ticket-alto td { border-left: 2px solid #00e5a3; }
-
-/* Estado Activo cuando haces clic para inspeccionar */
-.fila-factura.fila-activa {
-  background-color: #1c2541 !important;
+/* ==================================================================== */
+/* CELL TEMPLATES CUSTOM — proyectados en SeisDataTableComponent        */
+/* Los estilos se aplican porque ng-template hereda el scope del padre  */
+/* ==================================================================== */
+.emisor-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.emisor-cell span {
+  color: #5c677d;
+  font-size: 11px;
 }
 
-.emisor-cell { display: flex; flex-direction: column; gap: 2px; }
-.emisor-cell span { color: #5c677d; font-size: 11px; }
-.badge-folio { background-color: #1c2541; color: #48cae4; padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 11px; }
-.monto-destacado { font-weight: 700; }
+.badge-folio {
+  background-color: #1c2541;
+  color: #48cae4;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 11px;
+}
+
+.monto-destacado {
+  font-weight: 700;
+  color: #ffffff;
+}
 
 /* ==================================================================== */
 /* ASIDE DRAWER — movido a GlobalOfertadorAsideComponent                */
