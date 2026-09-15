@@ -8,6 +8,8 @@
     "src/main.ts"
   ],
   "include": [
-    "src/**/*.d.ts"
+    "src/**/*.d.ts",
+    "../../dist/shared-utils",
+    "src/app/ofertador-facturas/ofertador-facturas-routing.module.ts"
   ]
 }
