@@ -1,54 +1,32 @@
-<div *ngIf="mostrar" class="modal-overlay"
-  (click)="!cargando && cancelar()"
-  (keydown.escape)="!cargando && cancelar()">
-  <dialog open class="modal"
-    (click)="$event.stopPropagation()"
-    (keydown)="$event.stopPropagation()"
-    aria-labelledby="modal-titulo">
-    <div class="modal-header">
-      <h2 id="modal-titulo">¿Confirmar oferta firme?</h2>
-    </div>
+<app-confirm-dialog
+  [open]="mostrar"
+  title="¿Confirmar oferta firme?"
+  confirmLabel="Sí, publicar oferta"
+  loadingLabel="Procesando..."
+  [loading]="cargando"
+  [error]="error"
+  maxWidth="500px"
+  (confirmed)="confirmar()"
+  (cancelled)="cancelar()">
 
-    <div class="modal-content" *ngIf="resumen && !error">
-      <p class="descripcion">
-        Vas a <strong>transferir ${{ resumen.montoTransferencia | number:'1.0-0' }}</strong>
-        al cliente por la factura <strong>#{{ resumen.folioFactura }}</strong> de <strong>{{ resumen.razonSocial }}</strong>.
-      </p>
+  <!-- El resumen se oculta cuando hay error: el mensaje de error pasa a ser
+       el único cuerpo, como en la versión previa de este modal. -->
+  <div class="resumen" *ngIf="resumen && !error">
+    <p class="descripcion">
+      Vas a <strong>transferir ${{ resumen.montoTransferencia | number:'1.0-0' }}</strong>
+      al cliente por la factura <strong>#{{ resumen.folioFactura }}</strong> de <strong>{{ resumen.razonSocial }}</strong>.
+    </p>
 
-      <p class="descripcion">
-        Dejarás retenidos <strong>${{ resumen.excedenteRetenido | number:'1.0-0' }}</strong>
-        como Excedente hasta que el deudor pague.
-      </p>
+    <p class="descripcion">
+      Dejarás retenidos <strong>${{ resumen.excedenteRetenido | number:'1.0-0' }}</strong>
+      como Excedente hasta que el deudor pague.
+    </p>
 
-      <p class="descripcion">
-        Tu mesa ganará <strong>${{ resumen.gananciaEstimada | number:'1.0-0' }}</strong>
-        en <strong>{{ resumen.plazo }} días</strong>.
-      </p>
+    <p class="descripcion">
+      Tu mesa ganará <strong>${{ resumen.gananciaEstimada | number:'1.0-0' }}</strong>
+      en <strong>{{ resumen.plazo }} días</strong>.
+    </p>
 
-      <p class="pregunta">¿Estás segura de publicar esta oferta?</p>
-    </div>
-
-    <div class="modal-content error-content" *ngIf="error">
-      <div class="error-icon">⚠</div>
-      <p class="error-message">{{ error }}</p>
-    </div>
-
-    <div class="modal-footer">
-      <button
-        class="btn btn-secondary"
-        (click)="cancelar()"
-        [disabled]="cargando">
-        Cancelar
-      </button>
-      <button
-        class="btn btn-primary"
-        (click)="confirmar()"
-        [disabled]="cargando">
-        <span *ngIf="!cargando">Sí, publicar oferta</span>
-        <span *ngIf="cargando" class="spinner-inline">
-          <span class="spinner"></span> Procesando...
-        </span>
-      </button>
-    </div>
-  </dialog>
-</div>
+    <p class="pregunta">¿Estás segura de publicar esta oferta?</p>
+  </div>
+</app-confirm-dialog>
