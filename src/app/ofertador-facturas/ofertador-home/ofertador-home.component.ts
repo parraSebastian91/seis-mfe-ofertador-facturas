@@ -34,7 +34,6 @@ import {
   LiquidacionCalculada,
 } from '../calculadora-liquidacion/calculadora-liquidacion.component';
 import { ToastContainerComponent } from '../toast-container/toast-container.component';
-import { VisorDocumentalComponent } from '../visor-documental/visor-documental.component';
 import { ValidadorDeltaOcrComponent } from '../validador-delta-ocr/validador-delta-ocr.component';
 import { KpisFacturaHeaderComponent } from '../kpis-factura-header/kpis-factura-header.component';
 import {
@@ -44,6 +43,7 @@ import {
   CardComponent,
   CardTitleDirective,
   SSEService,
+  DocumentViewerComponent,
 } from 'shared-utils';
 import { environment } from '../../../../../seis-portal/src/environments/environment.development';
 import { CarteraLeadsComponent } from '../cartera-leads/cartera-leads.component';
@@ -63,7 +63,7 @@ import { OfertadorAsideComponent } from '../ofertador-aside/ofertador-aside.comp
     PreLiquidacionComponent,
     ModalConfirmacionOfertaComponent,
     ToastContainerComponent,
-    VisorDocumentalComponent,
+    DocumentViewerComponent,
     ValidadorDeltaOcrComponent,
     KpisFacturaHeaderComponent,
     OcrNotesListComponent,
@@ -285,6 +285,11 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
       };
       this.cupoAsignado = true;
     }
+  }
+
+  reintentarDocumento() {
+    if (!this.facturaSeleccionada) return;
+    this.cargarDocumento(this.facturaSeleccionada);
   }
 
   cargarDocumento(factura: FacturaMarketplace) {

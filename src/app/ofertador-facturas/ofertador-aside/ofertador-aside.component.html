@@ -24,11 +24,13 @@
     </div>
 
     <div class="visor-panel-body">
-      <app-visor-documental
-        [url]="urlDocumento"
+      <app-document-viewer
+        variant="lightbox"
+        [src]="urlDocumento"
+        [altText]="'Documento adjunto'"
         [loading]="!urlDocumento && visorAbierto"
         [error]="false"
-      ></app-visor-documental>
+      ></app-document-viewer>
     </div>
   </div>
 

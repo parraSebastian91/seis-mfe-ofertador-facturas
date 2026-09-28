@@ -98,12 +98,15 @@
       <div class="factura-detail">
         <div class="visor-wrapper">
           <div class="visor-documental">
-            <app-visor-documental
-              [url]="urlDocumento"
+            <app-document-viewer
+              variant="lightbox"
+              [src]="urlDocumento"
+              [altText]="'Documento de la factura'"
               [loading]="loadingDoc"
               [error]="errorDoc"
+              (retry)="reintentarDocumento()"
             >
-            </app-visor-documental>
+            </app-document-viewer>
             <app-ocr-notes-list [notas]="notasOcr" [readOnly]="true">
             </app-ocr-notes-list>
             <app-validador-delta-ocr [comparaciones]="comparacionesOcr">

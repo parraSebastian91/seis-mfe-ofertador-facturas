@@ -8,8 +8,7 @@ import {
 } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { VisorDocumentalComponent } from '../visor-documental/visor-documental.component';
-import { AdjuntoItem, AdjuntosListComponent } from 'shared-utils';
+import { AdjuntoItem, AdjuntosListComponent, DocumentViewerComponent } from 'shared-utils';
 import {
   CalculadoraLiquidacionComponent,
   LiquidacionCalculada,
@@ -43,7 +42,7 @@ export interface LeadsMarketplace {
 @Component({
   selector: 'app-ofertador-aside',
   standalone: true,
-  imports: [FormsModule, DecimalPipe, VisorDocumentalComponent, AdjuntosListComponent, CalculadoraLiquidacionComponent, PreLiquidacionComponent],
+  imports: [FormsModule, DecimalPipe, DocumentViewerComponent, AdjuntosListComponent, CalculadoraLiquidacionComponent, PreLiquidacionComponent],
   templateUrl: './ofertador-aside.component.html',
   styleUrl: './ofertador-aside.component.scss',
 })

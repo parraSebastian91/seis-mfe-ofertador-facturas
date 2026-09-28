@@ -543,18 +543,19 @@
   flex-direction: column;
 
   // Fuerza que el componente visor llene todo el alto disponible
-  app-visor-documental {
+  app-document-viewer {
     flex: 1;
     display: flex;
     flex-direction: column;
 
-    ::ng-deep .visor-bg {
+    ::ng-deep .dv {
       flex: 1;
       min-height: unset;
       height: 100%;
     }
 
-    ::ng-deep .visor-canvas {
+    ::ng-deep .dv__viewport,
+    ::ng-deep .dv__state {
       flex: 1;
       min-height: unset;
       height: 100%;
