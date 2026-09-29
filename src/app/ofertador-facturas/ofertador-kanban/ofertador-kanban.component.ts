@@ -1,9 +1,6 @@
 import { Component } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import {
-  CardComponent,
-  CardTitleDirective,
-} from '../../../../../shared-utils/src/public-api';
+import { CardComponent, CardTitleDirective } from 'shared-utils';
 import {
   OfertadorAsideComponent,
   FacturaSeleccionada,

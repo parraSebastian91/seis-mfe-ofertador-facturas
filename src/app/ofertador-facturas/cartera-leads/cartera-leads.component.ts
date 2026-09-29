@@ -1,6 +1,5 @@
-import { CardOrganizacionComponent } from 'shared-utils';
+import { CardComponent, CardOrganizacionComponent } from 'shared-utils';
 import { Component } from '@angular/core';
-import { CardComponent } from '../../../../../shared-utils/src/public-api';
 
 export interface LeadsMarketplace {
   razonSocial: string;
